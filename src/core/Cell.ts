@@ -2,7 +2,7 @@ import { Board } from './Board'
 import { Player } from './Player'
 import { Position } from './Position'
 
-type CellContent = Player | undefined
+export type CellContent = Player | undefined
 
 export enum CanPlaceResult {
   Success = 'success',
