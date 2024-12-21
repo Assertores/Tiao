@@ -3,14 +3,18 @@
   "version": "0.1.0",
   "main": "index.js",
   "scripts": {
-    "start": "vite"
+    "start": "vite",
+    "format": "prettier . -w"
   },
   "author": "",
   "license": "UNLICENSED",
   "description": "",
   "devDependencies": {
+    "@types/express": "5.0.0",
     "@eslint/js": "9.17.0",
     "@types/node": "22.10.2",
+    "@types/react": "19.0.2",
+    "@types/react-dom": "19.0.2",
     "eslint": "9.17.0",
     "prettier": "3.4.2",
     "tsx": "4.19.2",
@@ -19,7 +23,8 @@
     "vite": "6.0.5"
   },
   "dependencies": {
-    "@types/express": "5.0.0",
-    "express": "5.0.1"
+    "express": "5.0.1",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
   }
 }
