@@ -1,5 +1,5 @@
-import { Board, BoardFactory } from '../Board'
-import { CanPlaceResult, Cell } from '../Cell'
+import { Board, BoardFactory, BoardMemento } from '../Board'
+import { CanPlaceResult, Cell, CellContent } from '../Cell'
 import { JumpTarget } from '../JumpTarget'
 import { PlayerOrder } from '../Player'
 import { Position } from '../Position'
@@ -105,13 +105,13 @@ class ConcreteBoard implements MutableBoard {
     return result
   }
 
-  serialization(): string {
-    return JSON.stringify({
+  serialization(): BoardMemento {
+    return {
+      size: this.size,
       cells: this.cells
         .filter((element) => element.content)
         .map(({ content, position }) => ({ content, position })),
-      size: this.size,
-    })
+    }
   }
 
   copy(): MutableBoard {
@@ -166,32 +166,16 @@ class ConcreteBoard implements MutableBoard {
 }
 
 export class ConcreteBoardFactory implements BoardFactory {
-  deserialization(json: string, activePlayer: PlayerOrder): Board {
-    const state = JSON.parse(json)
-    if (
-      typeof state.size?.x !== 'number' ||
-      typeof state.size?.y !== 'number'
-    ) {
-      throw new Error('Board has no size.')
-    }
-    if (state.size.x < 0 || state.size.y < 0) {
+  deserialization(memento: BoardMemento, activePlayer: PlayerOrder): Board {
+    if (memento.size.x < 0 || memento.size.y < 0) {
       throw new Error('Board size is negativ.')
     }
 
-    const result = new ConcreteBoard(state.size, activePlayer)
+    const result = new ConcreteBoard(memento.size, activePlayer)
 
-    state.cells.forEach((element: any) => {
-      if (
-        typeof element?.position?.x !== 'number' ||
-        typeof element?.position?.y !== 'number'
-      ) {
-        throw new Error('Cell has no position')
-      }
+    memento.cells.forEach((element: {content: PlayerOrder, position: Position}) => {
       if (!result.isInBound(element.position)) {
         throw new Error('Cell is out of bound')
-      }
-      if (!Object.values(PlayerOrder).includes(element.content)) {
-        throw new Error('Cell content is outside of PlayerOrder enum')
       }
 
       result.add(element.content, element.position)
