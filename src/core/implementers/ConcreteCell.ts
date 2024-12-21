@@ -11,13 +11,14 @@ export class ConcreteCell implements Cell {
     private board: MutableBoard,
   ) {}
 
-  place(player: PlayerOrder): Board {
+  place(): Board {
     if (!this.canPlace()) {
       throw new Error("tried to place on an spot that can't be placed on.")
     }
 
     const board = this.board.copy()
-    board.add(player, this.position)
+    board.add(this.board.activePlayer, this.position)
+    board.record(this.position)
     return board
   }
 

@@ -16,6 +16,6 @@ export interface Cell {
   readonly position: Position
   readonly content: CellContent
 
-  place(player: PlayerOrder): Board
+  place(): Board
   canPlace(): CanPlaceResult
 }

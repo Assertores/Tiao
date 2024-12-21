@@ -9,10 +9,13 @@ import { ConcreteJumpTarget } from './ConcreteJumpTarget'
 
 class ConcreteBoard implements MutableBoard {
   private cells: ConcreteCell[]
+  private moves: Position[]
 
   public constructor(
     readonly size: Position,
+    readonly activePlayer: PlayerOrder,
     cells?: ConcreteCell[],
+    moves?: Position[],
   ) {
     this.cells = []
     for (let i = 0; i < size.x * size.y; i++) {
@@ -26,13 +29,14 @@ class ConcreteBoard implements MutableBoard {
         ),
       )
     }
+    this.moves = moves ? moves : []
   }
 
   get(position: Position): Cell {
     return this.getConcrete(position)
   }
 
-  jumpTargets(player: PlayerOrder, position: Position): JumpTarget[] {
+  jumpTargets(position: Position): JumpTarget[] {
     const result: JumpTarget[] = []
     for (let x = position.x - 1; x <= position.x + 1; x++) {
       for (let y = position.y - 1; y <= position.y + 1; y++) {
@@ -43,7 +47,7 @@ class ConcreteBoard implements MutableBoard {
         if (!current.content) {
           continue
         }
-        if (current.content === player) {
+        if (current.content === this.activePlayer) {
           continue
         }
         const target = this.getConcrete({
@@ -56,7 +60,6 @@ class ConcreteBoard implements MutableBoard {
 
         result.push(
           new ConcreteJumpTarget(
-            player,
             position,
             target.position,
             current.position,
@@ -82,7 +85,12 @@ class ConcreteBoard implements MutableBoard {
   }
 
   copy(): MutableBoard {
-    return new ConcreteBoard(this.size, this.cells)
+    return new ConcreteBoard(
+      this.size,
+      this.activePlayer,
+      this.cells,
+      this.moves,
+    )
   }
 
   add(player: PlayerOrder, position: Position): void {
@@ -101,6 +109,18 @@ class ConcreteBoard implements MutableBoard {
     )
   }
 
+  record(origin: Position, target?: Position): void {
+    if (target) {
+      if (this.moves.length === 0) {
+        this.moves = [origin, target]
+      } else {
+        this.moves.push(target)
+      }
+    } else {
+      this.moves = [origin]
+    }
+  }
+
   getConcrete(position: Position): ConcreteCell {
     return this.cells[position.x + position.y * this.size.x]
   }
@@ -116,7 +136,7 @@ class ConcreteBoard implements MutableBoard {
 }
 
 export class ConcreteBoardFactory implements BoardFactory {
-  deserialization(json: string): Board {
+  deserialization(json: string, activePlayer: PlayerOrder): Board {
     const state = JSON.parse(json)
     if (
       typeof state.size?.x !== 'number' ||
@@ -128,7 +148,7 @@ export class ConcreteBoardFactory implements BoardFactory {
       throw new Error('Board size is negativ.')
     }
 
-    const result = new ConcreteBoard(state.size)
+    const result = new ConcreteBoard(state.size, activePlayer)
 
     state.cells.forEach((element: any) => {
       if (
@@ -137,10 +157,10 @@ export class ConcreteBoardFactory implements BoardFactory {
       ) {
         throw new Error('Cell has no position')
       }
-      if(!result.isInBound(element.position)){
+      if (!result.isInBound(element.position)) {
         throw new Error('Cell is out of bound')
       }
-      if(!Object.values(PlayerOrder).includes(element.content)){
+      if (!Object.values(PlayerOrder).includes(element.content)) {
         throw new Error('Cell content is outside of PlayerOrder enum')
       }
 

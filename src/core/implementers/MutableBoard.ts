@@ -8,6 +8,8 @@ export interface MutableBoard extends Board {
   add(player: PlayerOrder, position: Position): void
   clear(position: Position): void
 
+  record(origin: Position, target?: Position): void
+
   getConcrete(position: Position): ConcreteCell
   isInBound(position: Position): boolean
 }

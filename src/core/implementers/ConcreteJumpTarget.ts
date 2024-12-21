@@ -6,7 +6,6 @@ import { MutableBoard } from './MutableBoard'
 
 export class ConcreteJumpTarget implements JumpTarget {
   public constructor(
-    readonly player: PlayerOrder,
     readonly origin: Position,
     readonly destination: Position,
     readonly victim: Position,
@@ -14,7 +13,7 @@ export class ConcreteJumpTarget implements JumpTarget {
   ) {}
 
   jump(): Board {
-    if (this.board.get(this.origin).content !== this.player) {
+    if (this.board.get(this.origin).content !== this.board.activePlayer) {
       throw new Error(
         'a JumpTarget was constructed that is impossible to be executed.',
       )
@@ -26,7 +25,8 @@ export class ConcreteJumpTarget implements JumpTarget {
     const board = this.board.copy()
     board.clear(this.origin)
     board.clear(this.victim)
-    board.add(this.player, this.destination)
+    board.add(this.board.activePlayer, this.destination)
+    board.record(this.origin, this.destination)
     return board
   }
 }
