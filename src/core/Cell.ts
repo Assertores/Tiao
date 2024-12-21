@@ -2,19 +2,20 @@ import { Board } from './Board'
 import { Player } from './Player'
 import { Position } from './Position'
 
-export enum CellType {
-  Normal = 'normal',
-  Border = 'border'
-}
-
 type CellContent = Player | undefined
+
+export enum CanPlaceResult {
+  Success = 'success',
+  OutOfBound = 'out of bound',
+  NonPlayableArea = 'non playable area',
+  Boarder = 'boarder',
+  Occupied = 'occupied',
+}
 
 export interface Cell {
   readonly position: Position
-  readonly type: CellType
   readonly content: CellContent
-  readonly parentBoard: Board
 
   place(player: Player): Board
-  canPlace(): boolean
+  canPlace(): CanPlaceResult
 }

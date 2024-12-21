@@ -6,5 +6,4 @@ export interface Game {
   readonly turn: number
   readonly player: Player[]
   readonly history: Board[]
-  readonly uncommitedStates: Board[]
 }
