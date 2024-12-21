@@ -8,7 +8,25 @@ import { ConcreteCell } from './ConcreteCell'
 import { ConcreteJumpTarget } from './ConcreteJumpTarget'
 
 class ConcreteBoard implements MutableBoard {
-  public constructor(readonly size: Position) {}
+  private cells: ConcreteCell[]
+
+  public constructor(
+    readonly size: Position,
+    cells?: ConcreteCell[],
+  ) {
+    this.cells = []
+    for (let i = 0; i < size.x * size.y; i++) {
+      this.cells.push(
+        new ConcreteCell(
+          cells ? cells[i].content : undefined,
+          cells
+            ? cells[i].position
+            : { x: i % size.x, y: Math.floor(i / size.x) },
+          this,
+        ),
+      )
+    }
+  }
 
   get(position: Position): Cell {
     return this.getConcrete(position)
@@ -59,15 +77,27 @@ class ConcreteBoard implements MutableBoard {
   }
 
   copy(): MutableBoard {
-    return this
+    return new ConcreteBoard(this.size, this.cells)
   }
 
   add(player: PlayerOrder, position: Position): void {
+    this.cells[position.x + position.y * this.size.x] = new ConcreteCell(
+      player,
+      position,
+      this,
+    )
+  }
 
-  clear(position: Position): void {}
+  clear(position: Position): void {
+    this.cells[position.x + position.y * this.size.x] = new ConcreteCell(
+      undefined,
+      position,
+      this,
+    )
+  }
 
   getConcrete(position: Position): ConcreteCell {
-    return new ConcreteCell(position, this)
+    return this.cells[position.x + position.y * this.size.x]
   }
 }
 

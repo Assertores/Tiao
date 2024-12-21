@@ -5,9 +5,8 @@ import { Position } from '../Position'
 import { MutableBoard } from './MutableBoard'
 
 export class ConcreteCell implements Cell {
-  readonly content: CellContent
-
   public constructor(
+    readonly content: CellContent,
     readonly position: Position,
     private board: MutableBoard,
   ) {}
