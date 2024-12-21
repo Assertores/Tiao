@@ -20,11 +20,7 @@ export class ConcreteJumpTarget implements JumpTarget {
         'a JumpTarget was constructed that is impossible to be executed.',
       )
     }
-    const canJumpToTarget = this.board.get(this.destination).canPlace()
-    if (
-      canJumpToTarget != CanPlaceResult.Boarder &&
-      canJumpToTarget != CanPlaceResult.Success
-    ) {
+    if (!this.board.getConcrete(this.destination).canJumpTo()) {
       throw new Error('tried to jump to a cell that is not empty')
     }
 

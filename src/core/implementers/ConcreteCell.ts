@@ -49,4 +49,12 @@ export class ConcreteCell implements Cell {
 
     return CanPlaceResult.Success
   }
+
+  public canJumpTo(): boolean {
+    const canJumpToTarget = this.canPlace()
+    return (
+      canJumpToTarget != CanPlaceResult.Boarder &&
+      canJumpToTarget != CanPlaceResult.Success
+    )
+  }
 }
