@@ -4,14 +4,16 @@
   "main": "index.js",
   "scripts": {
     "start": "vite",
+    "client": "vite",
+    "server": "tsx src/server/index.ts",
     "format": "prettier . -w"
   },
   "author": "",
   "license": "UNLICENSED",
   "description": "",
   "devDependencies": {
-    "@types/express": "5.0.0",
     "@eslint/js": "9.17.0",
+    "@types/express": "5.0.0",
     "@types/node": "22.10.2",
     "@types/react": "19.0.2",
     "@types/react-dom": "19.0.2",
@@ -23,6 +25,7 @@
     "vite": "6.0.5"
   },
   "dependencies": {
+    "dotenv": "16.4.7",
     "express": "5.0.1",
     "react": "19.0.0",
     "react-dom": "19.0.0"
