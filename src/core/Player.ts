@@ -1,6 +1,6 @@
-export enum PlayerOrder{
+export enum PlayerOrder {
   First,
-  Second
+  Second,
 }
 
 export interface Player {
