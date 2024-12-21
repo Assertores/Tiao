@@ -1,1 +1,8 @@
-export interface Player {}
+export enum PlayerOrder{
+  First,
+  Second
+}
+
+export interface Player {
+  readonly playerOrder: PlayerOrder
+}

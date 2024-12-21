@@ -1,6 +1,6 @@
 import { Board } from '../Board'
 import { CanPlaceResult, Cell, CellContent } from '../Cell'
-import { Player } from '../Player'
+import { PlayerOrder } from '../Player'
 import { Position } from '../Position'
 import { MutableBoard } from './MutableBoard'
 
@@ -12,7 +12,7 @@ export class ConcreteCell implements Cell {
     private board: MutableBoard,
   ) {}
 
-  place(player: Player): Board {
+  place(player: PlayerOrder): Board {
     if (!this.canPlace()) {
       throw new Error("tried to place on an spot that can't be placed on.")
     }

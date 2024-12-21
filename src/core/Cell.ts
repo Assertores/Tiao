@@ -1,8 +1,8 @@
 import { Board } from './Board'
-import { Player } from './Player'
+import { PlayerOrder } from './Player'
 import { Position } from './Position'
 
-export type CellContent = Player | undefined
+export type CellContent = PlayerOrder | undefined
 
 export enum CanPlaceResult {
   Success = 'success',
@@ -16,6 +16,6 @@ export interface Cell {
   readonly position: Position
   readonly content: CellContent
 
-  place(player: Player): Board
+  place(player: PlayerOrder): Board
   canPlace(): CanPlaceResult
 }

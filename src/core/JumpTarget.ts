@@ -1,9 +1,9 @@
 import { Board } from './Board'
-import { Player } from './Player'
+import { PlayerOrder } from './Player'
 import { Position } from './Position'
 
 export interface JumpTarget {
-  readonly player: Player
+  readonly player: PlayerOrder
   readonly origin: Position
   readonly destination: Position
   readonly victim: Position

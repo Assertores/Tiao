@@ -1,7 +1,7 @@
 import { Board, BoardFactory } from '../Board'
 import { CanPlaceResult, Cell } from '../Cell'
 import { JumpTarget } from '../JumpTarget'
-import { Player } from '../Player'
+import { PlayerOrder } from '../Player'
 import { Position } from '../Position'
 import { MutableBoard } from './MutableBoard'
 import { ConcreteCell } from './ConcreteCell'
@@ -14,7 +14,7 @@ class ConcreteBoard implements MutableBoard {
     return this.getConcrete(position)
   }
 
-  jumpTargets(player: Player, position: Position): JumpTarget[] {
+  jumpTargets(player: PlayerOrder, position: Position): JumpTarget[] {
     const result: JumpTarget[] = []
     for (let x = position.x - 1; x <= position.x + 1; x++) {
       for (let y = position.y - 1; y <= position.y + 1; y++) {
@@ -62,7 +62,7 @@ class ConcreteBoard implements MutableBoard {
     return this
   }
 
-  add(player: Player, position: Position): void {}
+  add(player: PlayerOrder, position: Position): void {
 
   clear(position: Position): void {}
 

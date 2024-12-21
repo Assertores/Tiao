@@ -1,4 +1,4 @@
 export interface Position {
-  readonly x: number
-  readonly y: number
+  readonly x: number // int
+  readonly y: number // int
 }
