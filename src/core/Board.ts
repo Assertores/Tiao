@@ -10,7 +10,7 @@ export interface Board {
   jumpTargets(player: PlayerOrder, position: Position): JumpTarget[]
   send(): void
   replay(): void
-  serialization(board: Board): string
+  serialization(): string
 }
 
 // NOTE: check `implementers/ConcreteBoard.ts` for use

@@ -9,4 +9,5 @@ export interface MutableBoard extends Board {
   clear(position: Position): void
 
   getConcrete(position: Position): ConcreteCell
+  isInBound(position: Position): boolean
 }

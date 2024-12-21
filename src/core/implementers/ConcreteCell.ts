@@ -33,12 +33,7 @@ export class ConcreteCell implements Cell {
 
     // TODO: add playable type check
 
-    if (
-      this.position.x === 0 ||
-      this.position.y === 0 ||
-      this.position.x === this.board.size.x ||
-      this.position.y === this.board.size.y
-    ) {
+    if (!this.board.isInBound(this.position)) {
       return CanPlaceResult.Boarder
     }
 
