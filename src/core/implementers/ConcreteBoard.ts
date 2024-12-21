@@ -8,7 +8,7 @@ import { ConcreteCell } from './ConcreteCell'
 import { ConcreteJumpTarget } from './ConcreteJumpTarget'
 
 class ConcreteBoard implements MutableBoard {
-  readonly size: unknown
+  public constructor(readonly size: Position) {}
 
   get(position: Position): Cell {
     return new ConcreteCell(position, this)
@@ -37,6 +37,6 @@ class ConcreteBoard implements MutableBoard {
 
 export class ConcreteBoardFactory implements BoardFactory {
   deserialization(json: string): Board {
-    return new ConcreteBoard()
+    return new ConcreteBoard({ x: 11, y: 11 })
   }
 }

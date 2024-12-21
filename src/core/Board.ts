@@ -4,7 +4,7 @@ import { Player } from './Player'
 import { Position } from './Position'
 
 export interface Board {
-  readonly size: unknown
+  readonly size: Position
 
   get(position: Position): Cell
   jumpTargets(player: Player, position: Position): JumpTarget[]

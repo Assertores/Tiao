@@ -13,10 +13,40 @@ export class ConcreteCell implements Cell {
   ) {}
 
   place(player: Player): Board {
-    return this.board
+    if (!this.canPlace()) {
+      throw new Error("tried to place on an spot that can't be placed on.")
+    }
+
+    const board = this.board.copy()
+    board.add(player, this.position)
+    return board
   }
 
   canPlace(): CanPlaceResult {
+    if (
+      this.position.x < 0 ||
+      this.position.y < 0 ||
+      this.position.x >= this.board.size.x ||
+      this.position.y >= this.board.size.y
+    ) {
+      return CanPlaceResult.OutOfBound
+    }
+
+    // TODO: add playable type check
+
+    if (
+      this.position.x === 0 ||
+      this.position.y === 0 ||
+      this.position.x === this.board.size.x ||
+      this.position.y === this.board.size.y
+    ) {
+      return CanPlaceResult.Boarder
+    }
+
+    if (this.content) {
+      return CanPlaceResult.Occupied
+    }
+
     return CanPlaceResult.Success
   }
 }
