@@ -9,8 +9,8 @@ export interface Board {
 
   get(position: Position): Cell
   jumpTargets(position: Position): JumpTarget[]
-  send(): void
-  replay(): void
+  endTurn(): string
+  replay(json: string): Board
   serialization(): string
 }
 

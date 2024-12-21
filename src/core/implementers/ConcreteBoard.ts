@@ -71,9 +71,39 @@ class ConcreteBoard implements MutableBoard {
     return result
   }
 
-  send(): void {}
+  endTurn(): string {
+    const result = JSON.stringify(this.moves)
+    this.moves = []
+    return result
+  }
 
-  replay(): void {}
+  replay(json: string): Board {
+    this.moves = JSON.parse(json) as Position[]
+
+    if (this.moves.length === 0) {
+      throw new Error('json does not contain moves.')
+    }
+
+    let result: Board = this
+    if (this.moves.length === 1) {
+      result = this.get(this.moves[0]).place()
+    } else {
+      for (let i = 1; i < this.moves.length; i++) {
+        const target = result
+          .jumpTargets(this.moves[i - 1])
+          .find((element: JumpTarget) => element.destination === this.moves[i])
+        if (!target) {
+          throw new Error('player made invalid jump.')
+        }
+
+        result = target.jump()
+      }
+    }
+
+    // thorws away the generated moves data
+    result.endTurn()
+    return result
+  }
 
   serialization(): string {
     return JSON.stringify({
