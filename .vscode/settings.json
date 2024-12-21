@@ -1,14 +1,14 @@
 {
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "prettier.requireConfig": false,
   "prettier.useEditorConfig": true,
   "prettier.quoteProps": "consistent",
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
   "prettier.trailingComma": "all",
   "prettier.semi": false,
   "prettier.singleQuote": true,
+  "prettier.tabWidth": 2,
   "editor.tabSize": 2,
   "editor.detectIndentation": true,
   "editor.indentSize": "tabSize",
-  "prettier.tabWidth": 2,
   "typescript.format.indentSwitchCase": true
 }
