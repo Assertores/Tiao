@@ -13,6 +13,7 @@ export interface Board {
   serialization(board: Board): string
 }
 
+// NOTE: check `implementers/ConcreteBoard.ts` for use
 export interface BoardFactory {
   deserialization(json: string): Board
 }
