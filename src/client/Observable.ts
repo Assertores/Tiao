@@ -1,17 +1,17 @@
-export type Subscription<T> = (event: T) => any
+export type Subscription = () => any
 
 export class Token {
-  public id: string
+  public id: Subscription
   public destroy(): void {}
 
-  constructor(hookId: string, destroyCallback: () => void) {
+  constructor(hookId: Subscription, destroyCallback: () => void) {
     this.id = hookId
     this.destroy = destroyCallback
   }
 }
 
 export class Observable<T> {
-  private hooks: { [id: string]: Subscription<T> } = {}
+  private hooks: Set<Subscription> = new Set()
 
   constructor(private _value: T) {}
 
@@ -19,36 +19,19 @@ export class Observable<T> {
     return this._value
   }
 
-  public subscribe(id: string, listener: Subscription<T>): Token {
-    if (id == null)
-      throw new Error('[Hooks] Id cannot be null, use "addUnique" instead')
-    this.hooks[id] = listener
+  public subscribe(listener: Subscription): Token {
+    this.hooks.add(listener)
 
-    return new Token(id, () => {
-      this.remove(id)
+    return new Token(listener, () => {
+      this.hooks.delete(listener)
     })
-  }
-
-  private remove(hookId: string | Token): void {
-    if (hookId instanceof Token) {
-      return this.remove(hookId.id)
-    }
-
-    delete this.hooks[hookId]
   }
 
   public set(newValue: T): void {
     this._value = newValue
 
-    const keys: string[] = Object.keys(this.hooks)
-
-    for (let i: number = keys.length; i--; ) {
-      if (this.hooks[keys[i]] == null) {
-        this.remove(keys[i])
-        continue
-      }
-
-      this.hooks[keys[i]](newValue)
-    }
+    this.hooks.forEach((element: Subscription) => {
+      if (element) element()
+    })
   }
 }

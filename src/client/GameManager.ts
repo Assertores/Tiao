@@ -1,26 +1,30 @@
 import axios from 'axios'
-import { Board } from '../core/Board'
+import { Board, BoardFactory } from '../core/Board'
 import { Cell } from '../core/Cell'
-import { Game } from '../core/Game'
+import { computeActivePlayer, Game } from '../core/Game'
 import { JumpTarget } from '../core/JumpTarget'
 import { Player, PlayerOrder } from '../core/Player'
 import { Position } from '../core/Position'
 import { Observable } from './Observable'
 import { SERVER_BASE_URL } from './settings'
+import { ConcreteBoardFactory } from '../core/implementers/ConcreteBoard'
 
 const GAME_API_URL = `${SERVER_BASE_URL}/api/v1/game`
+const POLLING_TIME = 1000 * 60
 
 export class GameManager {
   public game: Observable<Game | undefined>
   public currentBoard: Observable<Board | undefined>
   public jumpHistory: Observable<{ jump: JumpTarget; board: Board }[]>
   public me: Observable<Player | undefined>
+  private boardFactory: BoardFactory
 
   constructor() {
     this.game = new Observable<Game | undefined>(undefined)
     this.currentBoard = new Observable<Board | undefined>(undefined)
     this.jumpHistory = new Observable<{ jump: JumpTarget; board: Board }[]>([])
     this.me = new Observable<Player | undefined>(undefined)
+    this.boardFactory = new ConcreteBoardFactory()
   }
 
   public async createGame(
@@ -33,14 +37,35 @@ export class GameManager {
       winCondition,
       playerCount,
     })
-    if (response.status === 201) {
-      const game = response.data
-      this.game.set(game)
+    if (response.status !== 201) {
+      return Promise.resolve()
     }
+    const game = response.data
+    this.jumpHistory.set([])
+    this.currentBoard.set(
+      this.boardFactory.deserialization(
+        game.currentBoard,
+        computeActivePlayer(game).playerOrder,
+      ),
+    )
+    this.me.set(
+      game.players.find(
+        (element) =>
+          element.playerOrder === this.currentBoard.value?.activePlayer,
+      ),
+    )
+    this.game.set(game)
+    await this.pollForNewGame()
   }
 
   public async joinGame(id: string, playerOrder: PlayerOrder): Promise<void> {
-    throw new Error('not implimented.')
+    await this.getGame(id)
+    this.me.set(
+      this.game.value!.players.find(
+        (element) => element.playerOrder === playerOrder,
+      ),
+    )
+    await this.pollForNewGame()
   }
 
   public async endTurn(): Promise<void> {
@@ -48,7 +73,22 @@ export class GameManager {
       throw new Error('tried to make a move eventhow its not his turn')
     }
 
-    throw new Error('not implimented.')
+    const response = await axios.post<Game>(
+      GAME_API_URL + '/' + this.game.value?.id + '/turn',
+      this.currentBoard.value?.endTurn(),
+    )
+
+    if (response.status === 200) {
+      const game = response.data
+      this.jumpHistory.set([])
+      this.currentBoard.set(
+        this.boardFactory.deserialization(
+          game.currentBoard,
+          computeActivePlayer(game).playerOrder,
+        ),
+      )
+      this.game.set(game)
+    }
   }
 
   public async place(cell: Cell): Promise<void> {
@@ -90,7 +130,7 @@ export class GameManager {
   }
 
   public IsMyTurn(): boolean {
-    if (!this.currentBoard.value) {
+    if (!this.game.value || !this.currentBoard.value) {
       return false
     }
     if (!this.me.value) {
@@ -98,5 +138,33 @@ export class GameManager {
     }
 
     return this.currentBoard.value.activePlayer === this.me.value.playerOrder
+  }
+
+  private async pollForNewGame(): Promise<void> {
+    setTimeout(this.pollForNewGame.bind(this), POLLING_TIME)
+    if (!this.game.value) {
+      return Promise.resolve()
+    }
+    if (this.currentBoard.value!.activePlayer !== this.me.value!.playerOrder) {
+      await this.getGame(this.game.value!.id)
+    }
+  }
+
+  private async getGame(id: string): Promise<void> {
+    const response = await axios.get<Game>(GAME_API_URL + '/' + id, {})
+
+    if (response.status !== 200) {
+      return Promise.resolve()
+    }
+
+    const game = response.data
+    this.jumpHistory.set([])
+    this.currentBoard.set(
+      this.boardFactory.deserialization(
+        game.currentBoard,
+        computeActivePlayer(game).playerOrder,
+      ),
+    )
+    this.game.set(game)
   }
 }
