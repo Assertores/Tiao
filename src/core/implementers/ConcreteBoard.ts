@@ -61,7 +61,7 @@ class ConcreteBoard implements MutableBoard {
           x: position.x + 2 * x,
           y: position.y + 2 * y,
         })
-        if (target.content) {
+        if (target.content === undefined) {
           continue
         }
         if (!this.isInBound(target.position)) {
