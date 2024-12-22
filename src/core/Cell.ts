@@ -10,7 +10,7 @@ export enum CanPlaceResult {
   NonPlayableArea = 'non playable area',
   Boarder = 'boarder',
   Occupied = 'occupied',
-  AlreadyMadeMove = 'already made move'
+  AlreadyMadeMove = 'already made move',
 }
 
 export interface Cell {

@@ -59,7 +59,7 @@ export class CellView implements Cell {
     readonly position: Position,
     private board: Board,
   ) {}
-  
+
   place(): Board {
     return this.board
   }
