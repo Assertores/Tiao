@@ -1,0 +1,22 @@
+.cell {
+  height: 32px;
+  width: 32px;
+  border: 2px solid;
+}
+
+.cell.empty {
+  background-color: burlywood;
+  border-color: saddlebrown;
+}
+
+.cell.stone {
+  border-color: saddlebrown;
+}
+
+.cell.stone.white {
+  background: white;
+}
+
+.cell.stone.black {
+  background: black;
+}

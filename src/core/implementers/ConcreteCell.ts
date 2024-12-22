@@ -22,18 +22,18 @@ export class ConcreteCell implements Cell {
   }
 
   canPlace(): CanPlaceResult {
-    if (
-      this.position.x < 0 ||
-      this.position.y < 0 ||
-      this.position.x >= this.board.size.x ||
-      this.position.y >= this.board.size.y
-    ) {
+    if (!this.board.isInBound(this.position)) {
       return CanPlaceResult.OutOfBound
     }
 
     // TODO: add playable type check
 
-    if (!this.board.isInBound(this.position)) {
+    if (
+      this.position.x === 0 ||
+      this.position.y === 0 ||
+      this.position.x === this.board.size.x ||
+      this.position.y === this.board.size.y
+    ) {
       return CanPlaceResult.Boarder
     }
 

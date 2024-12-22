@@ -165,10 +165,10 @@ class ConcreteBoard implements MutableBoard {
 
   isInBound(position: Position): boolean {
     return (
-      position.x === 0 ||
-      position.y === 0 ||
-      position.x === this.size.x ||
-      position.y === this.size.y
+      position.x >= 0 ||
+      position.y >= 0 ||
+      position.x < this.size.x ||
+      position.y < this.size.y
     )
   }
 }
