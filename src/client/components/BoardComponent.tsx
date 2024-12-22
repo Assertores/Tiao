@@ -3,6 +3,8 @@ import { Board } from '../../core/Board'
 import { Cell } from '../../core/Cell'
 import { CellComponent } from './CellComponent'
 import { useGameManager } from '../GameContext'
+import { JumpTarget } from '../../core/JumpTarget'
+import { JumpTargetComponent, JumpTargetType } from './JumpTargetComponent'
 
 interface BoardComponentProps {
   board: Board
@@ -11,6 +13,7 @@ interface BoardComponentProps {
 export function BoardComponent({ board }: BoardComponentProps): ReactElement {
   const gameManager = useGameManager()
   const [placingStone, setPlacingStone] = useState<boolean>(false)
+  const [jumpTargets, setJumpTargets] = useState<JumpTarget[]>([])
 
   const cells: Cell[][] = []
   for (let y = 0; y < board.size.y; y++) {
@@ -29,26 +32,60 @@ export function BoardComponent({ board }: BoardComponentProps): ReactElement {
     <div>
       {placingStone ? 'Placing stone...' : null}
       <div className="board">
-        {cells.map((cellRow, rowNumber) => (
-          <div
-            key={rowNumber}
-            style={{
-              display: 'flex',
-            }}
-          >
-            {cellRow.map((cell) => (
-              <CellComponent
-                key={`${cell.position.x},${cell.position.y}`}
-                cell={cell}
-                onClick={() => {
-                  if (placingStone) {
-                    gameManager.place(cell)
-                  }
-                }}
+        <div>
+          {cells.map((cellRow, rowNumber) => (
+            <div
+              key={rowNumber}
+              style={{
+                display: 'flex',
+              }}
+            >
+              {cellRow.map((cell) => (
+                <CellComponent
+                  key={`${cell.position.x},${cell.position.y}`}
+                  cell={cell}
+                  onClick={async () => {
+                    if (placingStone) {
+                      await gameManager.place(cell)
+                      setPlacingStone(false)
+                    } else {
+                      const jumpTargets = board.jumpTargets(
+                        gameManager.me!.playerOrder,
+                        cell.position,
+                      )
+                      console.log('jumpTargets', jumpTargets)
+                      setJumpTargets(jumpTargets)
+                    }
+                  }}
+                />
+              ))}
+            </div>
+          ))}
+        </div>
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+          }}
+        >
+          {jumpTargets.map((target) => (
+            <>
+              <JumpTargetComponent
+                position={target.destination}
+                type={JumpTargetType.Destination}
               />
-            ))}
-          </div>
-        ))}
+              <JumpTargetComponent
+                position={target.victim}
+                type={JumpTargetType.Victim}
+              />
+              {/* <JumpTargetComponent
+                position={target.origin}
+                type={JumpTargetType.Origin}
+              /> */}
+            </>
+          ))}
+        </div>
       </div>
       <button
         type="button"

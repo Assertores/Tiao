@@ -30,7 +30,7 @@ export class ConcreteCell implements Cell {
       this.position.x === this.board.size.x - 1 ||
       this.position.y === this.board.size.y - 1
     ) {
-      return CanPlaceResult.Boarder
+      return CanPlaceResult.Border
     }
 
     if (this.content) {

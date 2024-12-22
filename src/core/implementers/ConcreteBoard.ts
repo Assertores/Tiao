@@ -40,18 +40,19 @@ class ConcreteBoard implements MutableBoard {
     if (!this.isInBound(position)) {
       return new OutOfBoundCell(undefined, position, this)
     }
+
     return this.cells[position.x + position.y * this.size.x]
   }
 
   jumpTargets(player: PlayerOrder, position: Position): JumpTarget[] {
     const result: JumpTarget[] = []
-    for (let x = position.x - 1; x <= position.x + 1; x++) {
-      for (let y = position.y - 1; y <= position.y + 1; y++) {
+    for (let x = -1; x <= 1; x++) {
+      for (let y = -1; y <= 1; y++) {
         if (x == position.x && y == position.y) {
           continue
         }
         const current = this.get({ x: position.x + x, y: position.y + y })
-        if (!current.content) {
+        if (current.content === undefined) {
           continue
         }
         if (current.content === player) {
@@ -117,8 +118,6 @@ class ConcreteBoard implements MutableBoard {
       throw new Error('json does not contain moves.')
     }
 
-    console.log('replay', content, this.moves, nextActivePlayer)
-
     let result: Board = this
     if (this.moves.length === 1) {
       result = result.get(this.moves[0]).place()
@@ -144,7 +143,7 @@ class ConcreteBoard implements MutableBoard {
     return {
       size: this.size,
       cells: this.cells
-        .filter((element) => element.content)
+        .filter((element) => element.content !== undefined)
         .map(({ content, position }) => ({
           content: content as PlayerOrder,
           position,
@@ -199,9 +198,9 @@ class ConcreteBoard implements MutableBoard {
 
   isInBound(position: Position): boolean {
     return (
-      position.x >= 0 ||
-      position.y >= 0 ||
-      position.x < this.size.x ||
+      position.x >= 0 &&
+      position.y >= 0 &&
+      position.x < this.size.x &&
       position.y < this.size.y
     )
   }

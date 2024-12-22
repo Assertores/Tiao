@@ -8,7 +8,7 @@ export enum CanPlaceResult {
   Success = 'success',
   OutOfBound = 'out of bound',
   NonPlayableArea = 'non playable area',
-  Boarder = 'boarder',
+  Border = 'border',
   Occupied = 'occupied',
   AlreadyMadeMove = 'already made move',
 }

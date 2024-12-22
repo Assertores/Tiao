@@ -68,14 +68,10 @@ export function createGameApi(storage: DataStorage): Application {
       const content = req.body
       const boardFactory = new ConcreteBoardFactory()
 
-      console.log('sendTurn', content)
       const board = boardFactory.deserialization(
         game.currentBoard,
         computeActivePlayer(game).playerOrder,
       )
-
-      console.log('activePlayer', computeActivePlayer(game).playerOrder)
-      console.log('nextActivePlayer', computeNextActivePlayer(game).playerOrder)
 
       // TODO: This might throw and we're doing nothing
       const currentBoard = board.replay(
@@ -88,8 +84,6 @@ export function createGameApi(storage: DataStorage): Application {
         turn: game.turn + 1,
         currentBoard: currentBoard.serialization(),
       }
-
-      console.log('nextGame', nextGame)
 
       storage.storeGame(nextGame)
       res.status(200).json(nextGame)

@@ -2,6 +2,7 @@
   background-color: burlywood;
   width: min-content;
   margin: 4px;
+  position: relative;
 }
 
 .cell {

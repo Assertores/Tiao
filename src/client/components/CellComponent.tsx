@@ -5,6 +5,7 @@ import classNames from 'classnames'
 
 interface CellComponentProps {
   cell: Cell
+  // jumpTargetType?: JumpTargetType
   onClick: () => void
 }
 
