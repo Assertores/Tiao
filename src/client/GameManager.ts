@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { Board, BoardFactory } from '../core/Board'
-import { Cell } from '../core/Cell'
+import { Cell, CellContent } from '../core/Cell'
 import { computeActivePlayer, Game } from '../core/Game'
 import { JumpTarget } from '../core/JumpTarget'
 import { Player, PlayerOrder } from '../core/Player'
@@ -16,15 +16,24 @@ export class GameManager {
   public game: Observable<Game | undefined>
   public currentBoard: Observable<Board | undefined>
   public jumpHistory: Observable<{ jump: JumpTarget; board: Board }[]>
-  public me: Observable<Player | undefined>
   private boardFactory: BoardFactory
+  private myOrder: CellContent
 
   constructor() {
     this.game = new Observable<Game | undefined>(undefined)
     this.currentBoard = new Observable<Board | undefined>(undefined)
     this.jumpHistory = new Observable<{ jump: JumpTarget; board: Board }[]>([])
-    this.me = new Observable<Player | undefined>(undefined)
     this.boardFactory = new ConcreteBoardFactory()
+  }
+
+  get me(): Player | undefined {
+    if (!this.myOrder) {
+      return undefined
+    }
+
+    return this.game.value?.players.find(
+      (element) => element.playerOrder === this.myOrder,
+    )
   }
 
   public async createGame(
@@ -48,23 +57,15 @@ export class GameManager {
         computeActivePlayer(game).playerOrder,
       ),
     )
-    this.me.set(
-      game.players.find(
-        (element) =>
-          element.playerOrder === this.currentBoard.value?.activePlayer,
-      ),
-    )
+    this.myOrder = this.currentBoard.value?.activePlayer
+
     this.game.set(game)
     await this.pollForNewGame()
   }
 
   public async joinGame(id: string, playerOrder: PlayerOrder): Promise<void> {
     await this.getGame(id)
-    this.me.set(
-      this.game.value!.players.find(
-        (element) => element.playerOrder === playerOrder,
-      ),
-    )
+    this.myOrder = playerOrder
     await this.pollForNewGame()
   }
 
@@ -78,17 +79,19 @@ export class GameManager {
       this.currentBoard.value?.endTurn(),
     )
 
-    if (response.status === 200) {
-      const game = response.data
-      this.jumpHistory.set([])
-      this.currentBoard.set(
-        this.boardFactory.deserialization(
-          game.currentBoard,
-          computeActivePlayer(game).playerOrder,
-        ),
-      )
-      this.game.set(game)
+    if (response.status !== 200) {
+      return Promise.resolve()
     }
+
+    const game = response.data
+    this.jumpHistory.set([])
+    this.currentBoard.set(
+      this.boardFactory.deserialization(
+        game.currentBoard,
+        computeActivePlayer(game).playerOrder,
+      ),
+    )
+    this.game.set(game)
   }
 
   public async place(cell: Cell): Promise<void> {
@@ -133,11 +136,11 @@ export class GameManager {
     if (!this.game.value || !this.currentBoard.value) {
       return false
     }
-    if (!this.me.value) {
+    if (!this.myOrder) {
       throw new Error('game exists but me is not assigned')
     }
 
-    return this.currentBoard.value.activePlayer === this.me.value.playerOrder
+    return this.currentBoard.value.activePlayer === this.myOrder
   }
 
   private async pollForNewGame(): Promise<void> {
@@ -145,8 +148,8 @@ export class GameManager {
     if (!this.game.value) {
       return Promise.resolve()
     }
-    if (this.currentBoard.value!.activePlayer !== this.me.value!.playerOrder) {
-      await this.getGame(this.game.value!.id)
+    if (this.currentBoard.value!.activePlayer !== this.myOrder) {
+      await this.getGame(this.game.value.id)
     }
   }
 
