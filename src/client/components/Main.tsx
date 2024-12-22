@@ -2,6 +2,7 @@ import { ChangeEventHandler, ReactElement, useCallback, useState } from 'react'
 import { useGame, useGameMenuActions } from '../GameContext'
 import { GameComponent } from './GameComponent'
 import { PlayerOrder, PlayerOrderValues } from '../../core/Player'
+import './style.css'
 
 export function Main(): ReactElement {
   const game = useGame()

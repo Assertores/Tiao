@@ -28,26 +28,28 @@ export function BoardComponent({ board }: BoardComponentProps): ReactElement {
   return (
     <div>
       {placingStone ? 'Placing stone...' : null}
-      {cells.map((cellRow, rowNumber) => (
-        <div
-          key={rowNumber}
-          style={{
-            display: 'flex',
-          }}
-        >
-          {cellRow.map((cell) => (
-            <CellComponent
-              key={`${cell.position.x},${cell.position.y}`}
-              cell={cell}
-              onClick={() => {
-                if (placingStone) {
-                  gameManager.place(cell)
-                }
-              }}
-            />
-          ))}
-        </div>
-      ))}
+      <div className="board">
+        {cells.map((cellRow, rowNumber) => (
+          <div
+            key={rowNumber}
+            style={{
+              display: 'flex',
+            }}
+          >
+            {cellRow.map((cell) => (
+              <CellComponent
+                key={`${cell.position.x},${cell.position.y}`}
+                cell={cell}
+                onClick={() => {
+                  if (placingStone) {
+                    gameManager.place(cell)
+                  }
+                }}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
       <button
         type="button"
         onClick={() => setPlacingStone((oldValue) => !oldValue)}

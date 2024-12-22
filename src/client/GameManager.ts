@@ -74,9 +74,16 @@ export class GameManager {
       throw new Error('tried to make a move eventhow its not his turn')
     }
 
+    const endTurnResult = this.currentBoard.value?.endTurn()
+
     const response = await axios.post<Game>(
       GAME_API_URL + '/' + this.game.value?.id + '/turn',
-      this.currentBoard.value?.endTurn(),
+      endTurnResult,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
     )
 
     if (response.status !== 200) {

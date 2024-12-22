@@ -58,27 +58,39 @@ export function createGameApi(storage: DataStorage): Application {
 
   async function sendTurn(req: Request, res: Response): Promise<void> {
     const { gameId } = req.params
+    const game = await storage.retrieveGame(gameId)
+    if (!game) {
+      res.sendStatus(404)
+      return
+    }
+
     try {
-      const game = await storage.retrieveGame(gameId)
-      if (!game) {
-        res.sendStatus(404)
-        return
-      }
       const content = req.body
       const boardFactory = new ConcreteBoardFactory()
-      const currentBoard = boardFactory
-        .deserialization(
-          game.currentBoard,
-          computeActivePlayer(game).playerOrder,
-        )
-        // TODO: This might throw and we're doing nothing
-        .replay(content, computeNextActivePlayer(game).playerOrder)
+
+      console.log('sendTurn', content)
+      const board = boardFactory.deserialization(
+        game.currentBoard,
+        computeActivePlayer(game).playerOrder,
+      )
+
+      console.log('activePlayer', computeActivePlayer(game).playerOrder)
+      console.log('nextActivePlayer', computeNextActivePlayer(game).playerOrder)
+
+      // TODO: This might throw and we're doing nothing
+      const currentBoard = board.replay(
+        content,
+        computeNextActivePlayer(game).playerOrder,
+      )
 
       const nextGame: Game = {
         ...game,
         turn: game.turn + 1,
         currentBoard: currentBoard.serialization(),
       }
+
+      console.log('nextGame', nextGame)
+
       storage.storeGame(nextGame)
       res.status(200).json(nextGame)
     } catch (ex) {

@@ -13,7 +13,7 @@ class ConcreteBoard implements MutableBoard {
 
   public constructor(
     readonly size: Position,
-    readonly activePlayer: PlayerOrder,
+    private _activePlayer: PlayerOrder,
     cells?: Cell[],
     moves?: Position[],
   ) {
@@ -30,6 +30,10 @@ class ConcreteBoard implements MutableBoard {
         ),
       )
     }
+  }
+
+  get activePlayer() {
+    return this._activePlayer
   }
 
   get(position: Position): Cell {
@@ -81,9 +85,12 @@ class ConcreteBoard implements MutableBoard {
     return result
   }
 
-  endTurn(): string {
+  endTurn(nextPlayer?: PlayerOrder): string {
     const result = JSON.stringify(this.moves)
     this.moves = []
+    if (nextPlayer !== undefined) {
+      this._activePlayer = nextPlayer
+    }
 
     for (let i = 0; i < this.cells.length; i++) {
       this.cells[i] = new ConcreteCell(
@@ -95,18 +102,24 @@ class ConcreteBoard implements MutableBoard {
     return result
   }
 
-  replay(json: string, nextActivePlayer: PlayerOrder): Board {
-    this.moves = JSON.parse(json) as Position[]
+  replay(content: Position[] | string, nextActivePlayer: PlayerOrder): Board {
+    if (typeof content === 'string') {
+      try {
+        this.moves = JSON.parse(content) as Position[]
+      } catch (ex) {
+        console.error('Error trying to parse replay() moves', ex)
+      }
+    } else {
+      this.moves = content
+    }
 
     if (this.moves.length === 0) {
       throw new Error('json does not contain moves.')
     }
 
-    let result: Board = new ConcreteBoard(
-      this.size,
-      nextActivePlayer,
-      this.cells,
-    )
+    console.log('replay', content, this.moves, nextActivePlayer)
+
+    let result: Board = this
     if (this.moves.length === 1) {
       result = result.get(this.moves[0]).place()
     } else {
@@ -123,7 +136,7 @@ class ConcreteBoard implements MutableBoard {
     }
 
     // thorws away the generated moves data
-    result.endTurn()
+    result.endTurn(nextActivePlayer)
     return result
   }
 
