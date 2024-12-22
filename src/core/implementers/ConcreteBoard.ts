@@ -2,7 +2,7 @@ import { Board, BoardFactory, BoardMemento } from '../Board'
 import { CanPlaceResult, Cell } from '../Cell'
 import { JumpTarget } from '../JumpTarget'
 import { PlayerOrder } from '../Player'
-import { Position } from '../Position'
+import { comparePositions, Position } from '../Position'
 import { MutableBoard } from './MutableBoard'
 import { CellView, ConcreteCell, OutOfBoundCell } from './ConcreteCell'
 import { ConcreteJumpTarget, JumpTargetView } from './ConcreteJumpTarget'
@@ -62,19 +62,21 @@ class ConcreteBoard implements MutableBoard {
           x: position.x + 2 * x,
           y: position.y + 2 * y,
         })
-        if (target.content === undefined) {
+        if (target.content !== undefined) {
           continue
         }
         if (!this.isInBound(target.position)) {
           continue
         }
 
+        // NOTE: you can only continue with the stone you started jumping
+        const isValidJump =
+          player === this.activePlayer &&
+          (this.moves.length === 0 ||
+            comparePositions(position, this.moves[this.moves.length - 1]))
+
         result.push(
-          new (player === this.activePlayer &&
-          // NOTE: you can only continue with the stone you started jumping
-          position === this.moves[this.moves.length - 1]
-            ? ConcreteJumpTarget
-            : JumpTargetView)(
+          new (isValidJump ? ConcreteJumpTarget : JumpTargetView)(
             position,
             target.position,
             current.position,
@@ -104,28 +106,31 @@ class ConcreteBoard implements MutableBoard {
   }
 
   replay(content: Position[] | string, nextActivePlayer: PlayerOrder): Board {
+    let moves: Position[] = []
     if (typeof content === 'string') {
       try {
-        this.moves = JSON.parse(content) as Position[]
+        moves = JSON.parse(content) as Position[]
       } catch (ex) {
         console.error('Error trying to parse replay() moves', ex)
       }
     } else {
-      this.moves = content
+      moves = content
     }
 
-    if (this.moves.length === 0) {
+    if (moves.length === 0) {
       throw new Error('json does not contain moves.')
     }
 
     let result: Board = this
-    if (this.moves.length === 1) {
-      result = result.get(this.moves[0]).place()
+    if (moves.length === 1) {
+      result = result.get(moves[0]).place()
     } else {
-      for (let i = 1; i < this.moves.length; i++) {
-        const target = result
-          .jumpTargets(this.activePlayer, this.moves[i - 1])
-          .find((element: JumpTarget) => element.destination === this.moves[i])
+      for (let i = 1; i < moves.length; i++) {
+        const jumpTargets = result.jumpTargets(this.activePlayer, moves[i - 1])
+
+        const target = jumpTargets.find((element: JumpTarget) =>
+          comparePositions(element.destination, moves[i]),
+        )
         if (!target) {
           throw new Error('player made invalid jump.')
         }

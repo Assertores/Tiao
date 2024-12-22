@@ -53,7 +53,6 @@ export function BoardComponent({ board }: BoardComponentProps): ReactElement {
                         gameManager.me!.playerOrder,
                         cell.position,
                       )
-                      console.log('jumpTargets', jumpTargets)
                       setJumpTargets(jumpTargets)
                     }
                   }}
@@ -74,6 +73,10 @@ export function BoardComponent({ board }: BoardComponentProps): ReactElement {
               <JumpTargetComponent
                 position={target.destination}
                 type={JumpTargetType.Destination}
+                onClick={async () => {
+                  await gameManager.jump(target)
+                  setJumpTargets([])
+                }}
               />
               <JumpTargetComponent
                 position={target.victim}

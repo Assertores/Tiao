@@ -11,11 +11,13 @@ export const enum JumpTargetType {
 export interface JumpTargetComponentProps {
   position: Position
   type: JumpTargetType
+  onClick?: () => void
 }
 
 export function JumpTargetComponent({
   position,
   type,
+  onClick,
 }: JumpTargetComponentProps): ReactElement {
   let background: string | undefined = undefined
 
@@ -33,7 +35,7 @@ export function JumpTargetComponent({
   }
 
   return (
-    <div
+    <button
       style={{
         position: 'absolute',
         top: `${position.y * CELL_SIZE}px`,
@@ -41,8 +43,13 @@ export function JumpTargetComponent({
         height: `${CELL_SIZE}px`,
         width: `${CELL_SIZE}px`,
         borderRadius: '50%',
+        padding: 0,
+        margin: 0,
+        border: 0,
         background,
+        pointerEvents: !onClick ? 'none' : undefined,
       }}
-    ></div>
+      onClick={onClick}
+    ></button>
   )
 }

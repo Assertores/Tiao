@@ -1,0 +1,72 @@
+{
+  "id": "b5e3db50-fc70-4ae6-896e-eec4fec53bb2",
+  "turn": 7,
+  "winCondition": 12,
+  "players": {
+    "0": {
+      "playerOrder": 0,
+      "score": 0
+    },
+    "1": {
+      "playerOrder": 1,
+      "score": 0
+    }
+  },
+  "currentBoard": {
+    "size": {
+      "x": 11,
+      "y": 11
+    },
+    "cells": [
+      {
+        "content": 1,
+        "position": {
+          "x": 2,
+          "y": 3
+        }
+      },
+      {
+        "content": 0,
+        "position": {
+          "x": 1,
+          "y": 7
+        }
+      },
+      {
+        "content": 0,
+        "position": {
+          "x": 2,
+          "y": 7
+        }
+      },
+      {
+        "content": 0,
+        "position": {
+          "x": 3,
+          "y": 7
+        }
+      },
+      {
+        "content": 1,
+        "position": {
+          "x": 1,
+          "y": 8
+        }
+      },
+      {
+        "content": 1,
+        "position": {
+          "x": 2,
+          "y": 8
+        }
+      },
+      {
+        "content": 1,
+        "position": {
+          "x": 3,
+          "y": 9
+        }
+      }
+    ]
+  }
+}
