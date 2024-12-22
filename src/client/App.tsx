@@ -2,6 +2,8 @@ import { ReactElement } from 'react'
 import { Game } from '../core/Game'
 import { PlayerOrder } from '../core/Player'
 import { GameComponent } from './components/GameComponent'
+import { GameManagerProvider, useGameMenuActions } from './GameContext'
+import { Main } from './components/Main'
 
 export function App(): ReactElement {
   const game: Game = {
@@ -23,5 +25,10 @@ export function App(): ReactElement {
       ],
     },
   }
-  return <GameComponent game={game} />
+
+  return (
+    <GameManagerProvider>
+      <Main />
+    </GameManagerProvider>
+  )
 }

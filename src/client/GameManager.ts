@@ -31,9 +31,7 @@ export class GameManager {
       return undefined
     }
 
-    return this.game.value?.players.find(
-      (element) => element.playerOrder === this.myOrder,
-    )
+    return this.game.value?.players[this.myOrder]
   }
 
   public async createGame(

@@ -4,6 +4,7 @@ import { Game } from '../../core/Game'
 import { readdir, readFile, writeFile } from 'node:fs/promises'
 import { v4 as uuidv4, validate } from 'uuid'
 import { Position } from '../../core/Position'
+import { Player, PlayerOrder } from '../../core/Player'
 
 enum DataDirectory {
   Games = 'games',
@@ -55,12 +56,33 @@ export class DataStorage {
     return gamesList
   }
 
-  public async createGame(size: Position): Promise<Game> {
+  public async createGame(
+    size: Position,
+    winCondition: number,
+    playerCount: number,
+  ): Promise<Game> {
+    const MAX_PLAYER_COUNT = Object.keys(PlayerOrder).length
+    if (playerCount > MAX_PLAYER_COUNT) {
+      throw new Error(
+        `Tried to create a game with ${playerCount} players, but max. amount of players is ${MAX_PLAYER_COUNT}`,
+      )
+    }
+    const players: Record<PlayerOrder, Player> = {} as Record<
+      PlayerOrder,
+      Player
+    >
+    for (let i = 0; i < playerCount; i++) {
+      const playerOrder = i as PlayerOrder
+      players[playerOrder] = {
+        playerOrder,
+        score: 0,
+      }
+    }
     const game: Game = {
       id: uuidv4(),
       turn: 0,
-      winCondition: 15,
-      players: [],
+      winCondition,
+      players,
       currentBoard: {
         size,
         cells: [],

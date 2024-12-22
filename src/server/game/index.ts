@@ -10,6 +10,8 @@ import {
 
 interface CreateGameData {
   size: Position
+  winCondition: number
+  playerCount: number
 }
 
 export function createGameApi(storage: DataStorage): Application {
@@ -27,7 +29,11 @@ export function createGameApi(storage: DataStorage): Application {
 
   async function createGame(req: Request, res: Response): Promise<void> {
     const data = req.body as CreateGameData
-    const game = await storage.createGame(data.size)
+    const game = await storage.createGame(
+      data.size,
+      data.winCondition,
+      data.playerCount,
+    )
     res.status(201).json(game)
   }
 

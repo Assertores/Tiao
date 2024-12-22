@@ -1,6 +1,6 @@
 import 'dotenv/config'
-import * as os from 'os'
 
+import cors from 'cors'
 import express, { ErrorRequestHandler, Request, Response } from 'express'
 import { createGameApi } from './game'
 import { DataStorage } from './storage/DataStorage'
@@ -17,6 +17,7 @@ const api = express()
 
 const gameApi = createGameApi(storage)
 
+api.use(cors())
 api.use(express.json())
 
 const errorRequestHandler: ErrorRequestHandler = (
