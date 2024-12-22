@@ -4,6 +4,16 @@ import { Player } from './Player'
 export interface Game {
   readonly id: string
   readonly turn: number
-  readonly player: Player[]
+  readonly winCondition: number
+  readonly players: Player[]
   readonly currentBoard: BoardMemento
+}
+
+function isWinConditionReached(game: Game): Player | undefined {
+  for (let i = 0; i < game.players.length; i++) {
+    if (game.players[i].score >= game.winCondition) {
+      return game.players[i]
+    }
+  }
+  return undefined
 }

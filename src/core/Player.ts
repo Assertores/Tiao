@@ -5,4 +5,5 @@ export enum PlayerOrder {
 
 export interface Player {
   readonly playerOrder: PlayerOrder
+  readonly score: number
 }
