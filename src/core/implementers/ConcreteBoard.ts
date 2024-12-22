@@ -21,7 +21,7 @@ class ConcreteBoard implements MutableBoard {
     this.cells = []
     for (let i = 0; i < size.x * size.y; i++) {
       this.cells.push(
-        new CellView(
+        new (this.moves.length === 0 ? ConcreteCell : CellView)(
           cells ? cells[i].content : undefined,
           cells
             ? cells[i].position
@@ -63,29 +63,18 @@ class ConcreteBoard implements MutableBoard {
           continue
         }
 
-        if (
-          player === this.activePlayer &&
+        result.push(
+          new (player === this.activePlayer &&
           // NOTE: you can only continue with the stone you started jumping
           position === this.moves[this.moves.length - 1]
-        ) {
-          result.push(
-            new ConcreteJumpTarget(
-              position,
-              target.position,
-              current.position,
-              this,
-            ),
-          )
-        } else {
-          result.push(
-            new JumpTargetView(
-              position,
-              target.position,
-              current.position,
-              this,
-            ),
-          )
-        }
+            ? ConcreteJumpTarget
+            : JumpTargetView)(
+            position,
+            target.position,
+            current.position,
+            this,
+          ),
+        )
       }
     }
     return result
@@ -94,6 +83,14 @@ class ConcreteBoard implements MutableBoard {
   endTurn(): string {
     const result = JSON.stringify(this.moves)
     this.moves = []
+
+    for (let i = 0; i < this.cells.length; i++) {
+      this.cells[i] = new ConcreteCell(
+        this.cells[i].content,
+        this.cells[i].position,
+        this,
+      )
+    }
     return result
   }
 
@@ -175,6 +172,14 @@ class ConcreteBoard implements MutableBoard {
       }
     } else {
       this.moves = [origin]
+    }
+
+    for (let i = 0; i < this.cells.length; i++) {
+      this.cells[i] = new CellView(
+        this.cells[i].content,
+        this.cells[i].position,
+        this,
+      )
     }
   }
 
