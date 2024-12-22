@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "vite",
-    "client": "vite",
+    "client": "vite --host",
     "server": "tsx src/server/index.ts",
     "format": "prettier . -w"
   },

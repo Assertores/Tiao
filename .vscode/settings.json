@@ -10,5 +10,6 @@
   "editor.tabSize": 2,
   "editor.detectIndentation": true,
   "editor.indentSize": "tabSize",
-  "typescript.format.indentSwitchCase": true
+  "typescript.format.indentSwitchCase": true,
+  "prettier.endOfLine": "lf"
 }
