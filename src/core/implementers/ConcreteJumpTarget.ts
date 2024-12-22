@@ -30,6 +30,6 @@ export class JumpTargetView implements JumpTarget {
   ) {}
 
   jump(): Board {
-    return this.board
+    throw new Error('This jump can not be taken')
   }
 }

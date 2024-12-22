@@ -68,19 +68,28 @@ export function createGameApi(storage: DataStorage): Application {
       const content = req.body
       const boardFactory = new ConcreteBoardFactory()
 
+      const activePlayer = computeActivePlayer(game).playerOrder
+      const nextActivePlayer = computeNextActivePlayer(game).playerOrder
       const board = boardFactory.deserialization(
         game.currentBoard,
-        computeActivePlayer(game).playerOrder,
+        activePlayer,
       )
 
       // TODO: This might throw and we're doing nothing
-      const currentBoard = board.replay(
+      const { board: currentBoard, score } = board.replay(
         content,
-        computeNextActivePlayer(game).playerOrder,
+        nextActivePlayer,
       )
+      let players = game.players
+      let player = players[activePlayer]
+      players[activePlayer] = {
+        ...player,
+        score: player.score + score,
+      }
 
       const nextGame: Game = {
         ...game,
+        players,
         turn: game.turn + 1,
         currentBoard: currentBoard.serialization(),
       }

@@ -105,7 +105,10 @@ class ConcreteBoard implements MutableBoard {
     return result
   }
 
-  replay(content: Position[] | string, nextActivePlayer: PlayerOrder): Board {
+  replay(
+    content: Position[] | string,
+    nextActivePlayer: PlayerOrder,
+  ): { board: Board; score: number } {
     let moves: Position[] = []
     if (typeof content === 'string') {
       try {
@@ -121,6 +124,7 @@ class ConcreteBoard implements MutableBoard {
       throw new Error('json does not contain moves.')
     }
 
+    let score = 0
     let result: Board = this
     if (moves.length === 1) {
       result = result.get(moves[0]).place()
@@ -141,7 +145,7 @@ class ConcreteBoard implements MutableBoard {
 
     // thorws away the generated moves data
     result.endTurn(nextActivePlayer)
-    return result
+    return { board: result, score }
   }
 
   serialization(): BoardMemento {

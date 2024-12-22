@@ -15,7 +15,10 @@ export interface Board {
   get(position: Position): Cell
   jumpTargets(player: PlayerOrder, position: Position): JumpTarget[]
   endTurn(nextPlayer?: PlayerOrder): string
-  replay(content: Position[] | string, nextActivePlayer: PlayerOrder): Board
+  replay(
+    content: Position[] | string,
+    nextActivePlayer: PlayerOrder,
+  ): { board: Board; score: number }
   serialization(): BoardMemento
 }
 
