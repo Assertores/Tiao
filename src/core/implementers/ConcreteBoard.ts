@@ -1,5 +1,5 @@
 import { Board, BoardFactory, BoardMemento } from '../Board'
-import { CanPlaceResult, Cell, CellContent } from '../Cell'
+import { Cell } from '../Cell'
 import { JumpTarget } from '../JumpTarget'
 import { PlayerOrder } from '../Player'
 import { Position } from '../Position'
@@ -173,13 +173,15 @@ export class ConcreteBoardFactory implements BoardFactory {
 
     const result = new ConcreteBoard(memento.size, activePlayer)
 
-    memento.cells.forEach((element: {content: PlayerOrder, position: Position}) => {
-      if (!result.isInBound(element.position)) {
-        throw new Error('Cell is out of bound')
-      }
+    memento.cells.forEach(
+      (element: { content: PlayerOrder; position: Position }) => {
+        if (!result.isInBound(element.position)) {
+          throw new Error('Cell is out of bound')
+        }
 
-      result.add(element.content, element.position)
-    })
+        result.add(element.content, element.position)
+      },
+    )
 
     return result
   }

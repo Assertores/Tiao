@@ -1,4 +1,4 @@
-import { Board, BoardMemento } from './Board'
+import { BoardMemento } from './Board'
 import { Player } from './Player'
 
 export interface Game {

@@ -1,6 +1,5 @@
 import { Board } from '../Board'
 import { JumpTarget } from '../JumpTarget'
-import { PlayerOrder } from '../Player'
 import { Position } from '../Position'
 import { MutableBoard } from './MutableBoard'
 

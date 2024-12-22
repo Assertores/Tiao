@@ -1,11 +1,11 @@
-import { Cell, CellContent } from './Cell'
+import { Cell } from './Cell'
 import { JumpTarget } from './JumpTarget'
 import { PlayerOrder } from './Player'
 import { Position } from './Position'
 
-export interface BoardMemento{
+export interface BoardMemento {
   readonly size: Position
-  readonly cells: {content: PlayerOrder, position: Position}[]
+  readonly cells: { content: PlayerOrder; position: Position }[]
 }
 
 export interface Board {

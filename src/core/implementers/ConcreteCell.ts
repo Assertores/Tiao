@@ -1,6 +1,5 @@
 import { Board } from '../Board'
 import { CanPlaceResult, Cell, CellContent } from '../Cell'
-import { PlayerOrder } from '../Player'
 import { Position } from '../Position'
 import { MutableBoard } from './MutableBoard'
 
