@@ -72,7 +72,7 @@ export class DataStorage {
       DataDirectory.Games,
       `${game.id}.json`,
     )
-    await writeFile(fileName, JSON.stringify(game))
+    await writeFile(fileName, JSON.stringify(game), { encoding: 'utf8' })
 
     return game
   }
@@ -104,6 +104,6 @@ export class DataStorage {
       DataDirectory.Games,
       `${game.id}.json`,
     )
-    await writeFile(fileName, JSON.stringify(game))
+    await writeFile(fileName, JSON.stringify(game), { encoding: 'utf8' })
   }
 }

@@ -56,25 +56,25 @@ export function createGameApi(storage: DataStorage): Application {
       const game = await storage.retrieveGame(gameId)
       if (!game) {
         res.sendStatus(404)
-      } else {
-        const content = req.body
-        const boardFactory = new ConcreteBoardFactory()
-        const currentBoard = boardFactory
-          .deserialization(
-            game.currentBoard,
-            computeActivePlayer(game).playerOrder,
-          )
-          // TODO: This might throw and we're doing nothing
-          .replay(content, computeNextActivePlayer(game).playerOrder)
-
-        const nextGame: Game = {
-          ...game,
-          turn: game.turn + 1,
-          currentBoard: currentBoard.serialization(),
-        }
-        storage.storeGame(nextGame)
-        res.status(200).json(nextGame)
+        return
       }
+      const content = req.body
+      const boardFactory = new ConcreteBoardFactory()
+      const currentBoard = boardFactory
+        .deserialization(
+          game.currentBoard,
+          computeActivePlayer(game).playerOrder,
+        )
+        // TODO: This might throw and we're doing nothing
+        .replay(content, computeNextActivePlayer(game).playerOrder)
+
+      const nextGame: Game = {
+        ...game,
+        turn: game.turn + 1,
+        currentBoard: currentBoard.serialization(),
+      }
+      storage.storeGame(nextGame)
+      res.status(200).json(nextGame)
     } catch (ex) {
       if (ex instanceof Error) {
         res.status(400).send(ex.message)
