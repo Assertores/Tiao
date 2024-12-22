@@ -52,3 +52,19 @@ export class ConcreteCell implements Cell {
     )
   }
 }
+
+export class CellView implements Cell {
+  public constructor(
+    readonly content: CellContent,
+    readonly position: Position,
+    private board: Board,
+  ) {}
+  
+  place(): Board {
+    return this.board
+  }
+
+  canPlace(): CanPlaceResult {
+    return CanPlaceResult.AlreadyMadeMove
+  }
+}

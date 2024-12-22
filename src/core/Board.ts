@@ -13,7 +13,7 @@ export interface Board {
   readonly activePlayer: PlayerOrder
 
   get(position: Position): Cell
-  jumpTargets(position: Position): JumpTarget[]
+  jumpTargets(player: PlayerOrder, position: Position): JumpTarget[]
   endTurn(): string
   replay(json: string, nextActivePlayer: PlayerOrder): Board
   serialization(): BoardMemento

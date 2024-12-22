@@ -1,43 +1,54 @@
 import { Board, BoardFactory, BoardMemento } from '../Board'
-import { Cell } from '../Cell'
+import { CanPlaceResult, Cell } from '../Cell'
 import { JumpTarget } from '../JumpTarget'
 import { PlayerOrder } from '../Player'
 import { Position } from '../Position'
 import { MutableBoard } from './MutableBoard'
-import { ConcreteCell } from './ConcreteCell'
-import { ConcreteJumpTarget } from './ConcreteJumpTarget'
-import { timeStamp } from 'console'
+import { CellView, ConcreteCell } from './ConcreteCell'
+import { ConcreteJumpTarget, JumpTargetView } from './ConcreteJumpTarget'
 
 class ConcreteBoard implements MutableBoard {
-  private cells: ConcreteCell[]
+  private cells: Cell[]
   private moves: Position[]
 
   public constructor(
     readonly size: Position,
     readonly activePlayer: PlayerOrder,
-    cells?: ConcreteCell[],
+    cells?: Cell[],
     moves?: Position[],
   ) {
+    this.moves = moves ? moves : []
     this.cells = []
     for (let i = 0; i < size.x * size.y; i++) {
-      this.cells.push(
-        new ConcreteCell(
-          cells ? cells[i].content : undefined,
-          cells
-            ? cells[i].position
-            : { x: i % size.x, y: Math.floor(i / size.x) },
-          this,
-        ),
-      )
+      if (this.moves.length !== 0) {
+        this.cells.push(
+          new CellView(
+            cells ? cells[i].content : undefined,
+            cells
+              ? cells[i].position
+              : { x: i % size.x, y: Math.floor(i / size.x) },
+            this,
+          ),
+        )
+      } else {
+        this.cells.push(
+          new ConcreteCell(
+            cells ? cells[i].content : undefined,
+            cells
+              ? cells[i].position
+              : { x: i % size.x, y: Math.floor(i / size.x) },
+            this,
+          ),
+        )
+      }
     }
-    this.moves = moves ? moves : []
   }
 
   get(position: Position): Cell {
-    return this.getConcrete(position)
+    return this.cells[position.x + position.y * this.size.x]
   }
 
-  jumpTargets(position: Position): JumpTarget[] {
+  jumpTargets(player: PlayerOrder, position: Position): JumpTarget[] {
     const result: JumpTarget[] = []
     for (let x = position.x - 1; x <= position.x + 1; x++) {
       for (let y = position.y - 1; y <= position.y + 1; y++) {
@@ -48,25 +59,45 @@ class ConcreteBoard implements MutableBoard {
         if (!current.content) {
           continue
         }
-        if (current.content === this.activePlayer) {
+        if (current.content === player) {
           continue
         }
-        const target = this.getConcrete({
+        const target = this.get({
           x: position.x + 2 * x,
           y: position.y + 2 * y,
         })
-        if (!target.canJumpTo()) {
+
+        const canJumpToTarget = target.canPlace()
+        if (
+          canJumpToTarget !== CanPlaceResult.Boarder &&
+          canJumpToTarget !== CanPlaceResult.Success
+        ) {
           continue
         }
 
-        result.push(
-          new ConcreteJumpTarget(
-            position,
-            target.position,
-            current.position,
-            this,
-          ),
-        )
+        if (
+          player === this.activePlayer &&
+          // NOTE: you can only continue with the stone you started jumping
+          position === this.moves[this.moves.length - 1]
+        ) {
+          result.push(
+            new ConcreteJumpTarget(
+              position,
+              target.position,
+              current.position,
+              this,
+            ),
+          )
+        } else {
+          result.push(
+            new JumpTargetView(
+              position,
+              target.position,
+              current.position,
+              this,
+            ),
+          )
+        }
       }
     }
     return result
@@ -95,7 +126,7 @@ class ConcreteBoard implements MutableBoard {
     } else {
       for (let i = 1; i < this.moves.length; i++) {
         const target = result
-          .jumpTargets(this.moves[i - 1])
+          .jumpTargets(this.activePlayer, this.moves[i - 1])
           .find((element: JumpTarget) => element.destination === this.moves[i])
         if (!target) {
           throw new Error('player made invalid jump.')
@@ -157,10 +188,6 @@ class ConcreteBoard implements MutableBoard {
     } else {
       this.moves = [origin]
     }
-  }
-
-  getConcrete(position: Position): ConcreteCell {
-    return this.cells[position.x + position.y * this.size.x]
   }
 
   isInBound(position: Position): boolean {
