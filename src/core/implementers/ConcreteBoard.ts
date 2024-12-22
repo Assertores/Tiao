@@ -20,27 +20,15 @@ class ConcreteBoard implements MutableBoard {
     this.moves = moves ? moves : []
     this.cells = []
     for (let i = 0; i < size.x * size.y; i++) {
-      if (this.moves.length !== 0) {
-        this.cells.push(
-          new CellView(
-            cells ? cells[i].content : undefined,
-            cells
-              ? cells[i].position
-              : { x: i % size.x, y: Math.floor(i / size.x) },
-            this,
-          ),
-        )
-      } else {
-        this.cells.push(
-          new ConcreteCell(
-            cells ? cells[i].content : undefined,
-            cells
-              ? cells[i].position
-              : { x: i % size.x, y: Math.floor(i / size.x) },
-            this,
-          ),
-        )
-      }
+      this.cells.push(
+        new CellView(
+          cells ? cells[i].content : undefined,
+          cells
+            ? cells[i].position
+            : { x: i % size.x, y: Math.floor(i / size.x) },
+          this,
+        ),
+      )
     }
   }
 
