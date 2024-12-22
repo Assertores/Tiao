@@ -9,10 +9,12 @@ import { Observable } from './Observable'
 export class GameManager {
   public game: Observable<Game | undefined>
   public currentBoard: Observable<Board | undefined>
+  public jumpHistory: Observable<{ jump: JumpTarget; board: Board }[]>
 
   constructor() {
     this.game = new Observable<Game | undefined>(undefined)
     this.currentBoard = new Observable<Board | undefined>(undefined)
+    this.jumpHistory = new Observable<{ jump: JumpTarget; board: Board }[]>([])
   }
 
   public createGame(
@@ -32,10 +34,29 @@ export class GameManager {
   }
 
   public place(cell: Cell): Promise<void> {
-    throw new Error('not implimented.')
+    this.currentBoard.set(cell.place())
+    return Promise.resolve()
   }
 
   public jump(target: JumpTarget): Promise<void> {
-    throw new Error('not implimented.')
+    const boardAfterJump = target.jump()
+    this.currentBoard.set(boardAfterJump)
+
+    const history = this.jumpHistory.value
+    history.push({ jump: target, board: boardAfterJump })
+    this.jumpHistory.set(history)
+
+    return Promise.resolve()
+  }
+
+  // index is past end iterator
+  public rollback(index: number): Promise<void> {
+    if (index < 0 || index > this.jumpHistory.value.length) {
+      throw new Error('index out of bound')
+    }
+
+    this.jumpHistory.set(this.jumpHistory.value.slice(0, index))
+    this.currentBoard.set(this.jumpHistory.value[index - 1].board)
+    return Promise.resolve()
   }
 }
