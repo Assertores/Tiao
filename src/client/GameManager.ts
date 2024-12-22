@@ -16,6 +16,7 @@ export class GameManager {
   public game: Observable<Game | undefined>
   public currentBoard: Observable<Board | undefined>
   public jumpHistory: Observable<{ jump: JumpTarget; board: Board }[]>
+  public hasPendingMoves: Observable<boolean>
   private boardFactory: BoardFactory
   private myOrder: CellContent
 
@@ -23,6 +24,7 @@ export class GameManager {
     this.game = new Observable<Game | undefined>(undefined)
     this.currentBoard = new Observable<Board | undefined>(undefined)
     this.jumpHistory = new Observable<{ jump: JumpTarget; board: Board }[]>([])
+    this.hasPendingMoves = new Observable<boolean>(false)
     this.boardFactory = new ConcreteBoardFactory()
   }
 
@@ -81,6 +83,8 @@ export class GameManager {
       return Promise.resolve()
     }
 
+    this.hasPendingMoves.set(false)
+
     const game = response.data
     this.jumpHistory.set([])
     this.currentBoard.set(
@@ -98,6 +102,7 @@ export class GameManager {
     }
 
     this.currentBoard.set(cell.place())
+    this.hasPendingMoves.set(true)
     return Promise.resolve()
   }
 
@@ -112,6 +117,7 @@ export class GameManager {
     const history = this.jumpHistory.value
     history.push({ jump: target, board: boardAfterJump })
     this.jumpHistory.set(history)
+    this.hasPendingMoves.set(true)
 
     return Promise.resolve()
   }
