@@ -9,6 +9,4 @@ export interface MutableBoard extends Board {
   clear(position: Position): void
 
   record(origin: Position, target?: Position): void
-
-  isInBound(position: Position): boolean
 }

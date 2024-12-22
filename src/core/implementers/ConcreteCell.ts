@@ -11,7 +11,7 @@ export class ConcreteCell implements Cell {
   ) {}
 
   place(): Board {
-    if (!this.canPlace()) {
+    if (this.canPlace() !== CanPlaceResult.Success) {
       throw new Error("tried to place on an spot that can't be placed on.")
     }
 
@@ -22,17 +22,13 @@ export class ConcreteCell implements Cell {
   }
 
   canPlace(): CanPlaceResult {
-    if (!this.board.isInBound(this.position)) {
-      return CanPlaceResult.OutOfBound
-    }
-
     // TODO: add playable type check
 
     if (
       this.position.x === 0 ||
       this.position.y === 0 ||
-      this.position.x === this.board.size.x ||
-      this.position.y === this.board.size.y
+      this.position.x === this.board.size.x - 1 ||
+      this.position.y === this.board.size.y - 1
     ) {
       return CanPlaceResult.Boarder
     }
@@ -42,14 +38,6 @@ export class ConcreteCell implements Cell {
     }
 
     return CanPlaceResult.Success
-  }
-
-  public canJumpTo(): boolean {
-    const canJumpToTarget = this.canPlace()
-    return (
-      canJumpToTarget != CanPlaceResult.Boarder &&
-      canJumpToTarget != CanPlaceResult.Success
-    )
   }
 }
 
@@ -66,5 +54,21 @@ export class CellView implements Cell {
 
   canPlace(): CanPlaceResult {
     return CanPlaceResult.AlreadyMadeMove
+  }
+}
+
+export class OutOfBoundCell implements Cell {
+  public constructor(
+    readonly content: CellContent,
+    readonly position: Position,
+    private board: Board,
+  ) {}
+
+  place(): Board {
+    return this.board
+  }
+
+  canPlace(): CanPlaceResult {
+    return CanPlaceResult.OutOfBound
   }
 }

@@ -4,7 +4,7 @@ import { JumpTarget } from '../JumpTarget'
 import { PlayerOrder } from '../Player'
 import { Position } from '../Position'
 import { MutableBoard } from './MutableBoard'
-import { CellView, ConcreteCell } from './ConcreteCell'
+import { CellView, ConcreteCell, OutOfBoundCell } from './ConcreteCell'
 import { ConcreteJumpTarget, JumpTargetView } from './ConcreteJumpTarget'
 
 class ConcreteBoard implements MutableBoard {
@@ -33,6 +33,9 @@ class ConcreteBoard implements MutableBoard {
   }
 
   get(position: Position): Cell {
+    if (!this.isInBound(position)) {
+      return new OutOfBoundCell(undefined, position, this)
+    }
     return this.cells[position.x + position.y * this.size.x]
   }
 
@@ -54,12 +57,10 @@ class ConcreteBoard implements MutableBoard {
           x: position.x + 2 * x,
           y: position.y + 2 * y,
         })
-
-        const canJumpToTarget = target.canPlace()
-        if (
-          canJumpToTarget !== CanPlaceResult.Boarder &&
-          canJumpToTarget !== CanPlaceResult.Success
-        ) {
+        if (target.content) {
+          continue
+        }
+        if (!this.isInBound(target.position)) {
           continue
         }
 
