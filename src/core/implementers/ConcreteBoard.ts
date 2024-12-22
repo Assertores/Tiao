@@ -110,7 +110,10 @@ class ConcreteBoard implements MutableBoard {
       size: this.size,
       cells: this.cells
         .filter((element) => element.content)
-        .map(({ content, position }) => ({ content, position })),
+        .map(({ content, position }) => ({
+          content: content as PlayerOrder,
+          position,
+        })),
     }
   }
 
