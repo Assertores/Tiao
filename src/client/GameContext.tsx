@@ -10,6 +10,7 @@ import { GameManager } from './GameManager'
 import { Game } from '../core/Game'
 import { Board } from '../core/Board'
 import { Position } from '../core/Position'
+import { Player } from '../core/Player'
 
 const gameManager: GameManager = new GameManager()
 const GameContext = createContext<GameManager>(gameManager)
@@ -59,10 +60,22 @@ export function useGame(): Game | undefined {
   return game
 }
 
+export function useCurrentPlayer(): Player {
+  const gameManager = useContext(GameContext)
+  const { me } = gameManager
+
+  if (!me) {
+    throw new Error(`Tried to get current player without an existing game`)
+  }
+
+  return me
+}
+
 export function useCurrentGameBoard(): Board | undefined {
   const gameManager = useContext(GameContext)
-
-  const [board, setBoard] = useState<Board | undefined>(undefined)
+  const [board, setBoard] = useState<Board | undefined>(
+    gameManager.currentBoard.value,
+  )
 
   useEffect(() => {
     const token = gameManager.currentBoard.subscribe(() => {
@@ -72,4 +85,8 @@ export function useCurrentGameBoard(): Board | undefined {
   }, [gameManager.currentBoard])
 
   return board
+}
+
+export function useGameManager(): GameManager {
+  return useContext(GameContext)
 }

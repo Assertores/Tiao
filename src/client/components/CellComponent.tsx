@@ -2,20 +2,27 @@ import { ReactElement } from 'react'
 import { Cell } from '../../core/Cell'
 import { PlayerOrder } from '../../core/Player'
 import './Cell.css'
+import classNames from 'classnames'
 
 interface CellComponentProps {
   cell: Cell
+  onClick: () => void
 }
 
-export function CellComponent({ cell }: CellComponentProps): ReactElement {
+export function CellComponent({
+  cell,
+  onClick,
+}: CellComponentProps): ReactElement {
   return (
-    <div>
-      {typeof cell.content === 'undefined' ? (
-        <EmptyCell />
-      ) : (
-        <OccupiedCell player={cell.content} />
-      )}
-    </div>
+    <button
+      type="button"
+      onClick={onClick}
+      className={classNames('cell', {
+        'empty': cell.content === undefined,
+        'stone white': cell.content === PlayerOrder.First,
+        'stone black': cell.content === PlayerOrder.Second,
+      })}
+    ></button>
   )
 }
 

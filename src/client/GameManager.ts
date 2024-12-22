@@ -29,7 +29,7 @@ export class GameManager {
   }
 
   get me(): Player | undefined {
-    if (!this.myOrder) {
+    if (this.myOrder === undefined) {
       return undefined
     }
 
@@ -140,7 +140,7 @@ export class GameManager {
     if (!this.game.value || !this.currentBoard.value) {
       return false
     }
-    if (!this.myOrder) {
+    if (this.myOrder === undefined) {
       throw new Error('game exists but me is not assigned')
     }
 

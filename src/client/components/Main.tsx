@@ -1,7 +1,7 @@
 import { ChangeEventHandler, ReactElement, useCallback, useState } from 'react'
 import { useGame, useGameMenuActions } from '../GameContext'
 import { GameComponent } from './GameComponent'
-import { PlayerOrder } from '../../core/Player'
+import { PlayerOrder, PlayerOrderValues } from '../../core/Player'
 
 export function Main(): ReactElement {
   const game = useGame()
@@ -26,12 +26,15 @@ function MainMenu(): ReactElement {
         Create new game
       </button>
       <input name="existing-game-id" value={gameId} onChange={onGameIdChange} />
-      <button
-        type="button"
-        onClick={() => joinGame(gameId, PlayerOrder.Second)}
-      >
-        Join game
-      </button>
+      {PlayerOrderValues.map((tag) => (
+        <button
+          key={tag}
+          type="button"
+          onClick={() => joinGame(gameId, PlayerOrder[tag])}
+        >
+          Join game as {tag} player
+        </button>
+      ))}
     </div>
   )
 }

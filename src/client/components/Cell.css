@@ -11,6 +11,7 @@
 
 .cell.stone {
   border-color: saddlebrown;
+  border-radius: 50%;
 }
 
 .cell.stone.white {
