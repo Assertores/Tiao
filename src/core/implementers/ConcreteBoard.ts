@@ -6,6 +6,7 @@ import { Position } from '../Position'
 import { MutableBoard } from './MutableBoard'
 import { ConcreteCell } from './ConcreteCell'
 import { ConcreteJumpTarget } from './ConcreteJumpTarget'
+import { timeStamp } from 'console'
 
 class ConcreteBoard implements MutableBoard {
   private cells: ConcreteCell[]
@@ -77,16 +78,20 @@ class ConcreteBoard implements MutableBoard {
     return result
   }
 
-  replay(json: string): Board {
+  replay(json: string, nextActivePlayer: PlayerOrder): Board {
     this.moves = JSON.parse(json) as Position[]
 
     if (this.moves.length === 0) {
       throw new Error('json does not contain moves.')
     }
 
-    let result: Board = this
+    let result: Board = new ConcreteBoard(
+      this.size,
+      nextActivePlayer,
+      this.cells,
+    )
     if (this.moves.length === 1) {
-      result = this.get(this.moves[0]).place()
+      result = result.get(this.moves[0]).place()
     } else {
       for (let i = 1; i < this.moves.length; i++) {
         const target = result
