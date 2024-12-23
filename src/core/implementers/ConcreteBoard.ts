@@ -140,6 +140,7 @@ class ConcreteBoard implements MutableBoard {
         }
 
         result = target.jump()
+        score++
       }
     }
 
