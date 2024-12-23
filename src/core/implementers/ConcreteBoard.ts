@@ -72,6 +72,7 @@ class ConcreteBoard implements MutableBoard {
         // NOTE: you can only continue with the stone you started jumping
         const isValidJump =
           player === this.activePlayer &&
+          this.get(position).content === player &&
           (this.moves.length === 0 ||
             comparePositions(position, this.moves[this.moves.length - 1]))
 
