@@ -10,7 +10,7 @@ import { SERVER_BASE_URL } from './settings'
 import { ConcreteBoardFactory } from '../core/implementers/ConcreteBoard'
 
 const GAME_API_URL = `${SERVER_BASE_URL}/api/v1/game`
-const POLLING_TIME = 1000 * 60
+const POLLING_TIME = 1000
 
 export class GameManager {
   public game: Observable<Game | undefined>
@@ -165,13 +165,21 @@ export class GameManager {
   }
 
   private async getGame(id: string): Promise<void> {
-    const response = await axios.get<Game>(GAME_API_URL + '/' + id, {})
+    const response = await axios.get<Game>(GAME_API_URL + '/' + id, {
+      headers: {
+        turn: this.game.value ? this.game.value.turn : -1,
+      },
+    })
 
     if (response.status !== 200) {
       return Promise.resolve()
     }
 
     const game = response.data
+    if (!game) {
+      return Promise.resolve()
+    }
+    
     this.jumpHistory.set([])
     this.currentBoard.set(
       this.boardFactory.deserialization(

@@ -43,9 +43,25 @@ export function createGameApi(storage: DataStorage): Application {
       const game = await storage.retrieveGame(gameId)
       if (!game) {
         res.sendStatus(404)
-      } else {
-        res.status(200).json(game)
+        return
       }
+      if (typeof req.headers.turn !== 'undefined') {
+        let turns: number[] = []
+        if (typeof req.headers.turn === 'string') {
+          turns.push(parseInt(req.headers.turn))
+        } else {
+          turns = req.headers.turn.map((element) => {
+            return parseInt(element)
+          })
+        }
+
+        if (turns.includes(game.turn)) {
+          res.sendStatus(200)
+          return
+        }
+      }
+
+      res.status(200).json(game)
     } catch (ex) {
       if (ex instanceof Error) {
         res.status(400).send(ex.message)
