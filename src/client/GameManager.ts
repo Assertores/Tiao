@@ -130,11 +130,22 @@ export class GameManager {
   }
 
   // index is past end iterator
+  // sending in a negative number will revert all actions and reset to the start of the round
   public async rollback(index: number): Promise<void> {
     if (!this.IsMyTurn()) {
       throw new Error('tried rollback eventhow its not his turn')
     }
-    if (index < 0 || index > this.jumpHistory.value.length) {
+    if (index < 0) {
+      this.jumpHistory.set([])
+      this.currentBoard.set(
+        this.boardFactory.deserialization(
+          this.game.value!.currentBoard,
+          computeActivePlayer(this.game.value!).playerOrder,
+        ),
+      )
+      return
+    }
+    if (index > this.jumpHistory.value.length) {
       throw new Error('index out of bound')
     }
 
@@ -179,7 +190,7 @@ export class GameManager {
     if (!game) {
       return Promise.resolve()
     }
-    
+
     this.jumpHistory.set([])
     this.currentBoard.set(
       this.boardFactory.deserialization(
