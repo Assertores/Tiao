@@ -37,7 +37,48 @@ export class ConcreteCell implements Cell {
       return CanPlaceResult.Occupied
     }
 
+    const record = new Set<Position>()
+
+    record.clear()
+    this.buildCluster({ x: this.position.x + 1, y: this.position.y }, record)
+    if (record.size >= this.board.getMaxClusterSize()) {
+      return CanPlaceResult.ExceedClusterSize
+    }
+    record.clear()
+    this.buildCluster({ x: this.position.x, y: this.position.y + 1 }, record)
+    if (record.size >= this.board.getMaxClusterSize()) {
+      return CanPlaceResult.ExceedClusterSize
+    }
+    record.clear()
+    this.buildCluster({ x: this.position.x - 1, y: this.position.y }, record)
+    if (record.size >= this.board.getMaxClusterSize()) {
+      return CanPlaceResult.ExceedClusterSize
+    }
+    record.clear()
+    this.buildCluster({ x: this.position.x, y: this.position.y - 1 }, record)
+    if (record.size >= this.board.getMaxClusterSize()) {
+      return CanPlaceResult.ExceedClusterSize
+    }
+
     return CanPlaceResult.Success
+  }
+
+  buildCluster(position: Position, record: Set<Position>): void {
+    if (record.size >= this.board.getMaxClusterSize()) {
+      return
+    }
+    if (this.board.get(position).content != this.content) {
+      return
+    }
+    if (record.has(position)) {
+      return
+    }
+    record.add(position)
+
+    this.buildCluster({ x: position.x + 1, y: position.y }, record)
+    this.buildCluster({ x: position.x, y: position.y + 1 }, record)
+    this.buildCluster({ x: position.x - 1, y: position.y }, record)
+    this.buildCluster({ x: position.x, y: position.y - 1 }, record)
   }
 }
 

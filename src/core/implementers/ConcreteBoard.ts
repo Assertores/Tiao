@@ -14,6 +14,7 @@ class ConcreteBoard implements MutableBoard {
   public constructor(
     readonly size: Position,
     private _activePlayer: PlayerOrder,
+    private _maxClusterSize: number,
     cells?: Cell[],
     moves?: Position[],
   ) {
@@ -166,6 +167,7 @@ class ConcreteBoard implements MutableBoard {
     return new ConcreteBoard(
       this.size,
       this.activePlayer,
+      this._maxClusterSize,
       this.cells,
       this.moves,
     )
@@ -215,6 +217,10 @@ class ConcreteBoard implements MutableBoard {
       position.y < this.size.y
     )
   }
+
+  getMaxClusterSize(): number{
+    return this._maxClusterSize;
+  }
 }
 
 export class ConcreteBoardFactory implements BoardFactory {
@@ -223,7 +229,8 @@ export class ConcreteBoardFactory implements BoardFactory {
       throw new Error('Board size is negativ.')
     }
 
-    const result = new ConcreteBoard(memento.size, activePlayer)
+    // TODO: somehow get max cluster size in here.
+    const result = new ConcreteBoard(memento.size, activePlayer, 10)
 
     memento.cells.forEach(
       (element: { content: PlayerOrder; position: Position }) => {
