@@ -2,6 +2,7 @@ import 'dotenv/config'
 
 import cors from 'cors'
 import express, { ErrorRequestHandler, Request, Response } from 'express'
+import ViteExpress from 'vite-express'
 import { createGameApi } from './game'
 import { DataStorage } from './storage/DataStorage'
 
@@ -40,4 +41,5 @@ const host: string = process.env.EXPRESS_HOST ?? 'localhost'
 
 console.log(`Running server on HOST='${host}' and PORT='${port}'`)
 
-api.listen(port, host)
+const server = api.listen(port, host)
+ViteExpress.bind(api, server)
