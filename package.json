@@ -3,9 +3,7 @@
   "version": "0.1.0",
   "main": "index.js",
   "scripts": {
-    "start": "vite",
-    "client": "vite --host",
-    "server": "tsx src/server/index.ts",
+    "start": "tsx src/server/index.ts",
     "format": "prettier . -w"
   },
   "author": "",
@@ -37,6 +35,7 @@
     "express": "5.0.1",
     "react": "19.0.0",
     "react-dom": "19.0.0",
-    "uuid": "11.0.3"
+    "uuid": "11.0.3",
+    "vite-express": "0.20.0"
   }
 }
