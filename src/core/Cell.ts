@@ -11,7 +11,7 @@ export enum CanPlaceResult {
   Border = 'border',
   Occupied = 'occupied',
   AlreadyMadeMove = 'already made move',
-  ExceedClusterSize = "exceed cluster size",
+  ExceedClusterSize = 'exceed cluster size',
 }
 
 export interface Cell {

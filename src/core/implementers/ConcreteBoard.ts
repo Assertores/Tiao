@@ -218,8 +218,8 @@ class ConcreteBoard implements MutableBoard {
     )
   }
 
-  getMaxClusterSize(): number{
-    return this._maxClusterSize;
+  getMaxClusterSize(): number {
+    return this._maxClusterSize
   }
 }
 
