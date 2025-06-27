@@ -1,7 +1,17 @@
 import { Board } from '../Board'
 import { CanPlaceResult, Cell, CellContent } from '../Cell'
+import { PlayerOrder } from '../Player'
 import { Position } from '../Position'
 import { MutableBoard } from './MutableBoard'
+
+function neighboringPositions(position: Position): Position[] {
+  return [
+    { x: position.x + 1, y: position.y },
+    { x: position.x, y: position.y + 1 },
+    { x: position.x - 1, y: position.y },
+    { x: position.x, y: position.y - 1 },
+  ]
+}
 
 export class ConcreteCell implements Cell {
   public constructor(
@@ -11,8 +21,9 @@ export class ConcreteCell implements Cell {
   ) {}
 
   place(): Board {
-    if (this.canPlace() !== CanPlaceResult.Success) {
-      throw new Error("tried to place on an spot that can't be placed on.")
+    const canPlaceResult = this.canPlace(this.board.activePlayer)
+    if (canPlaceResult !== CanPlaceResult.Success) {
+      throw new Error(`Tried to place on an invalid cell: ${canPlaceResult}`)
     }
 
     const board = this.board.copy()
@@ -21,7 +32,7 @@ export class ConcreteCell implements Cell {
     return board
   }
 
-  canPlace(): CanPlaceResult {
+  canPlace(playerColor: PlayerOrder): CanPlaceResult {
     // TODO: add playable type check
 
     if (
@@ -37,48 +48,25 @@ export class ConcreteCell implements Cell {
       return CanPlaceResult.Occupied
     }
 
-    const record = new Set<Position>()
-
-    record.clear()
-    this.buildCluster({ x: this.position.x + 1, y: this.position.y }, record)
-    if (record.size >= this.board.getMaxClusterSize()) {
-      return CanPlaceResult.ExceedClusterSize
+    // Checking for clusters with connected-component labelling
+    const cluster = []
+    const neighboringCells = [this.position]
+    while (neighboringCells.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const currentCell = neighboringCells.pop()! // The loop checks that the array has elements
+      cluster.push(currentCell)
+      const candidates = neighboringPositions(currentCell)
+      candidates.forEach((position) => {
+        if (this.board.get(position).content === playerColor) {
+          neighboringCells.push(position)
+        }
+      })
     }
-    record.clear()
-    this.buildCluster({ x: this.position.x, y: this.position.y + 1 }, record)
-    if (record.size >= this.board.getMaxClusterSize()) {
-      return CanPlaceResult.ExceedClusterSize
-    }
-    record.clear()
-    this.buildCluster({ x: this.position.x - 1, y: this.position.y }, record)
-    if (record.size >= this.board.getMaxClusterSize()) {
-      return CanPlaceResult.ExceedClusterSize
-    }
-    record.clear()
-    this.buildCluster({ x: this.position.x, y: this.position.y - 1 }, record)
-    if (record.size >= this.board.getMaxClusterSize()) {
+    if (cluster.length >= this.board.getMaxClusterSize()) {
       return CanPlaceResult.ExceedClusterSize
     }
 
     return CanPlaceResult.Success
-  }
-
-  buildCluster(position: Position, record: Set<Position>): void {
-    if (record.size >= this.board.getMaxClusterSize()) {
-      return
-    }
-    if (this.board.get(position).content != this.content) {
-      return
-    }
-    if (record.has(position)) {
-      return
-    }
-    record.add(position)
-
-    this.buildCluster({ x: position.x + 1, y: position.y }, record)
-    this.buildCluster({ x: position.x, y: position.y + 1 }, record)
-    this.buildCluster({ x: position.x - 1, y: position.y }, record)
-    this.buildCluster({ x: position.x, y: position.y - 1 }, record)
   }
 }
 

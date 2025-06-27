@@ -74,7 +74,7 @@ export class GameManager {
       throw new Error('GameManager does not contain a valid game object')
     }
     if (!this.IsMyTurn()) {
-      throw new Error('Tried to make a move out of their turn')
+      throw new Error('Tried to make a move out of turn')
     }
 
     const endTurnResult = this.currentBoard.value?.endTurn()
@@ -105,7 +105,7 @@ export class GameManager {
 
   public async place(cell: Cell): Promise<void> {
     if (!this.IsMyTurn()) {
-      throw new Error('tried to place a stone eventhow its not his turn')
+      throw new Error('Tried to place a stone out of turn')
     }
 
     this.currentBoard.set(cell.place())
@@ -115,7 +115,7 @@ export class GameManager {
 
   public async jump(target: JumpTarget): Promise<void> {
     if (!this.IsMyTurn()) {
-      throw new Error('tried to jump eventhow its not his turn')
+      throw new Error('Tried to jump out of turn')
     }
 
     const boardAfterJump = target.jump()
@@ -136,7 +136,7 @@ export class GameManager {
       throw new Error('GameManager does not contain a valid game object')
     }
     if (!this.IsMyTurn()) {
-      throw new Error('Tried to rollback out of their turn')
+      throw new Error('Tried to rollback out of turn')
     }
     if (index < 0) {
       this.jumpHistory.set([])
