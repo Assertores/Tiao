@@ -64,7 +64,7 @@ export class DataStorage {
     const MAX_PLAYER_COUNT = Object.keys(PlayerOrder).length
     if (playerCount > MAX_PLAYER_COUNT) {
       throw new Error(
-        `Tried to create a game with ${playerCount} players, but max. amount of players is ${MAX_PLAYER_COUNT}`,
+        `Tried to create a game with ${playerCount.toFixed()} players, but max. amount of players is ${MAX_PLAYER_COUNT.toFixed()}`,
       )
     }
     const players: Record<PlayerOrder, Player> = {} as Record<
@@ -73,20 +73,14 @@ export class DataStorage {
     >
     for (let i = 0; i < playerCount; i++) {
       const playerOrder = i as PlayerOrder
-      players[playerOrder] = {
-        playerOrder,
-        score: 0,
-      }
+      players[playerOrder] = { playerOrder, score: 0 }
     }
     const game: Game = {
       id: uuidv4(),
       turn: 0,
       winCondition,
       players,
-      currentBoard: {
-        size,
-        cells: [],
-      },
+      currentBoard: { size, cells: [] },
     }
 
     const fileName = join(

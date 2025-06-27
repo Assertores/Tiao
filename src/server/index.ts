@@ -22,13 +22,20 @@ api.use(cors())
 api.use(express.json())
 
 const errorRequestHandler: ErrorRequestHandler = (
-  err: any,
+  err: unknown,
   req: Request,
   res: Response,
   next,
 ): void | Promise<void> => {
   if (err) {
-    res.status(err.status).json({ status: err.status, message: err.message })
+    if (
+      typeof err === 'object' &&
+      'status' in err &&
+      typeof err.status === 'number'
+    ) {
+      const message = 'message' in err ? err.message : err
+      res.status(err.status).json({ status: err.status, message })
+    }
   } else {
     next()
   }
@@ -36,10 +43,14 @@ const errorRequestHandler: ErrorRequestHandler = (
 api.use(errorRequestHandler)
 api.use('/api/v1/game', gameApi)
 
-const port: number = Number(process.env.EXPRESS_PORT)
+const port = Number(process.env.EXPRESS_PORT)
 const host: string = process.env.EXPRESS_HOST ?? 'localhost'
 
-console.log(`Running server on HOST='${host}' and PORT='${port}'`)
+console.log(`Running server on HOST='${host}' and PORT='${port.toFixed()}'`)
 
 const server = api.listen(port, host)
-ViteExpress.bind(api, server)
+
+ViteExpress.bind(api, server).catch((err: unknown) => {
+  console.error('Server errored unexpectedly')
+  console.error(err)
+})

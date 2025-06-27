@@ -34,23 +34,24 @@ export function BoardComponent({ board }: BoardComponentProps): ReactElement {
       <div className="board">
         <div>
           {cells.map((cellRow, rowNumber) => (
-            <div
-              key={rowNumber}
-              style={{
-                display: 'flex',
-              }}
-            >
+            <div key={rowNumber} style={{ display: 'flex' }}>
               {cellRow.map((cell) => (
                 <CellComponent
-                  key={`${cell.position.x},${cell.position.y}`}
+                  key={`${cell.position.x.toFixed()},${cell.position.y.toFixed()}`}
                   cell={cell}
-                  onClick={async () => {
+                  onClick={() => {
                     if (placingStone) {
-                      await gameManager.place(cell)
-                      setPlacingStone(false)
+                      void gameManager.place(cell).then(() => {
+                        setPlacingStone(false)
+                      })
                     } else {
+                      if (typeof gameManager.me === 'undefined') {
+                        throw new Error(
+                          'player controler not defined: gameManager.me === undefined',
+                        )
+                      }
                       const jumpTargets = board.jumpTargets(
-                        gameManager.me!.playerOrder,
+                        gameManager.me.playerOrder,
                         cell.position,
                       )
                       setJumpTargets(jumpTargets)
@@ -61,21 +62,16 @@ export function BoardComponent({ board }: BoardComponentProps): ReactElement {
             </div>
           ))}
         </div>
-        <div
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-          }}
-        >
+        <div style={{ position: 'absolute', top: 0, left: 0 }}>
           {jumpTargets.map((target) => (
             <>
               <JumpTargetComponent
                 position={target.destination}
                 type={JumpTargetType.Destination}
-                onClick={async () => {
-                  await gameManager.jump(target)
-                  setJumpTargets([])
+                onClick={() => {
+                  void gameManager.jump(target).then(() => {
+                    setJumpTargets([])
+                  })
                 }}
               />
               <JumpTargetComponent
@@ -92,12 +88,14 @@ export function BoardComponent({ board }: BoardComponentProps): ReactElement {
       </div>
       <button
         type="button"
-        onClick={() => setPlacingStone((oldValue) => !oldValue)}
+        onClick={() => {
+          setPlacingStone((oldValue) => !oldValue)
+        }}
         disabled={!gameManager.IsMyTurn()}
       >
         Place Stone
       </button>
-      <button disabled={isSubmitDisabled} onClick={submitMove}>
+      <button disabled={isSubmitDisabled} onClick={() => void submitMove()}>
         Submit move
       </button>
     </div>

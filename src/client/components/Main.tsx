@@ -23,7 +23,7 @@ function MainMenu(): ReactElement {
 
   return (
     <div>
-      <button type="button" onClick={createGame}>
+      <button type="button" onClick={() => void createGame()}>
         Create new game
       </button>
       <input name="existing-game-id" value={gameId} onChange={onGameIdChange} />
@@ -31,7 +31,7 @@ function MainMenu(): ReactElement {
         <button
           key={tag}
           type="button"
-          onClick={() => joinGame(gameId, PlayerOrder[tag])}
+          onClick={() => void joinGame(gameId, PlayerOrder[tag])}
         >
           Join game as {tag} player
         </button>

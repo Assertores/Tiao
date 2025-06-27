@@ -81,14 +81,14 @@ export function createGameApi(storage: DataStorage): Application {
     }
 
     try {
-      const content = req.body
+      const content = req.body as Position[]
       const boardFactory = new ConcreteBoardFactory()
 
-      const activePlayer = computeActivePlayer(game).playerOrder
+      const activePlayerOrder = computeActivePlayer(game).playerOrder
       const nextActivePlayer = computeNextActivePlayer(game).playerOrder
       const board = boardFactory.deserialization(
         game.currentBoard,
-        activePlayer,
+        activePlayerOrder,
       )
 
       // TODO: This might throw and we're doing nothing
@@ -96,11 +96,11 @@ export function createGameApi(storage: DataStorage): Application {
         content,
         nextActivePlayer,
       )
-      let players = game.players
-      let player = players[activePlayer]
-      players[activePlayer] = {
-        ...player,
-        score: player.score + score,
+      const players = game.players
+      const activePlayer = players[activePlayerOrder]
+      players[activePlayerOrder] = {
+        ...activePlayer,
+        score: activePlayer.score + score,
       }
 
       const nextGame: Game = {
@@ -110,7 +110,7 @@ export function createGameApi(storage: DataStorage): Application {
         currentBoard: currentBoard.serialization(),
       }
 
-      storage.storeGame(nextGame)
+      await storage.storeGame(nextGame)
       res.status(200).json(nextGame)
     } catch (ex) {
       if (ex instanceof Error) {

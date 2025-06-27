@@ -1,5 +1,5 @@
 import { Board, BoardFactory, BoardMemento } from '../Board'
-import { CanPlaceResult, Cell } from '../Cell'
+import { Cell } from '../Cell'
 import { JumpTarget } from '../JumpTarget'
 import { PlayerOrder } from '../Player'
 import { comparePositions, Position } from '../Position'
@@ -18,7 +18,7 @@ class ConcreteBoard implements MutableBoard {
     cells?: Cell[],
     moves?: Position[],
   ) {
-    this.moves = moves ? moves : []
+    this.moves = moves ?? []
     this.cells = []
     for (let i = 0; i < size.x * size.y; i++) {
       this.cells.push(
@@ -127,6 +127,7 @@ class ConcreteBoard implements MutableBoard {
     }
 
     let score = 0
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     let result: Board = this
     if (moves.length === 1) {
       result = result.get(moves[0]).place()
@@ -146,7 +147,7 @@ class ConcreteBoard implements MutableBoard {
       }
     }
 
-    // thorws away the generated moves data
+    // throws away the generated moves data
     result.endTurn(nextActivePlayer)
     return { board: result, score }
   }
@@ -156,10 +157,8 @@ class ConcreteBoard implements MutableBoard {
       size: this.size,
       cells: this.cells
         .filter((element) => element.content !== undefined)
-        .map(({ content, position }) => ({
-          content: content as PlayerOrder,
-          position,
-        })),
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        .map(({ content, position }) => ({ content: content!, position })),
     }
   }
 

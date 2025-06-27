@@ -1,7 +1,6 @@
 import { Board } from '../Board'
 import { PlayerOrder } from '../Player'
 import { Position } from '../Position'
-import { ConcreteCell } from './ConcreteCell'
 
 export interface MutableBoard extends Board {
   copy(): MutableBoard

@@ -1,8 +1,8 @@
-export type Subscription = () => any
+export type Subscription = () => unknown
 
 export class Token {
   public id: Subscription
-  public destroy(): void {}
+  public destroy: () => void
 
   constructor(hookId: Subscription, destroyCallback: () => void) {
     this.id = hookId
@@ -11,7 +11,7 @@ export class Token {
 }
 
 export class Observable<T> {
-  private hooks: Set<Subscription> = new Set()
+  private hooks: Set<Subscription> = new Set<Subscription>()
 
   constructor(private _value: T) {}
 
@@ -31,7 +31,7 @@ export class Observable<T> {
     this._value = newValue
 
     this.hooks.forEach((element: Subscription) => {
-      if (element) element()
+      element()
     })
   }
 }

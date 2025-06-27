@@ -38,10 +38,10 @@ export function JumpTargetComponent({
     <button
       style={{
         position: 'absolute',
-        top: `${position.y * CELL_SIZE}px`,
-        left: `${position.x * CELL_SIZE}px`,
-        height: `${CELL_SIZE}px`,
-        width: `${CELL_SIZE}px`,
+        top: `${(position.y * CELL_SIZE).toFixed()}px`,
+        left: `${(position.x * CELL_SIZE).toFixed()}px`,
+        height: `${CELL_SIZE.toFixed()}px`,
+        width: `${CELL_SIZE.toFixed()}px`,
         borderRadius: '50%',
         padding: 0,
         margin: 0,

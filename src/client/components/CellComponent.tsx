@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
 import { Cell } from '../../core/Cell'
 import { PlayerOrder } from '../../core/Player'
-import classNames from 'classnames'
 
 interface CellComponentProps {
   cell: Cell

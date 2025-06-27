@@ -1,13 +1,11 @@
 // @ts-check
 
 import eslint from '@eslint/js'
+import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
   eslint.configs.recommended,
-  // tseslint.configs.recommended,
-  // tseslint.configs.strict,
-  // tseslint.configs.stylistic,
   tseslint.configs.strictTypeChecked,
   tseslint.configs.stylisticTypeChecked,
   {
@@ -17,5 +15,13 @@ export default tseslint.config(
         tsconfigRootDir: import.meta.dirname,
       },
     },
+  },
+  {
+    ignores: ['src/client/**'],
+    languageOptions: { globals: { ...globals.node } },
+  },
+  {
+    files: ['src/client/**'],
+    languageOptions: { globals: { ...globals.browser } },
   },
 )

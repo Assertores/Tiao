@@ -70,20 +70,20 @@ export class GameManager {
   }
 
   public async endTurn(): Promise<void> {
+    if (!this.game.value) {
+      throw new Error('GameManager does not contain a valid game object')
+    }
     if (!this.IsMyTurn()) {
-      throw new Error('tried to make a move eventhow its not his turn')
+      throw new Error('Tried to make a move out of their turn')
     }
 
     const endTurnResult = this.currentBoard.value?.endTurn()
+    const gameId = this.game.value.id
 
     const response = await axios.post<Game>(
-      GAME_API_URL + '/' + this.game.value?.id + '/turn',
+      `${GAME_API_URL}/${gameId}/turn`,
       endTurnResult,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      },
+      { headers: { 'Content-Type': 'application/json' } },
     )
 
     if (response.status !== 200) {
@@ -132,15 +132,18 @@ export class GameManager {
   // index is past end iterator
   // sending in a negative number will revert all actions and reset to the start of the round
   public async rollback(index: number): Promise<void> {
+    if (!this.game.value) {
+      throw new Error('GameManager does not contain a valid game object')
+    }
     if (!this.IsMyTurn()) {
-      throw new Error('tried rollback eventhow its not his turn')
+      throw new Error('Tried to rollback out of their turn')
     }
     if (index < 0) {
       this.jumpHistory.set([])
       this.currentBoard.set(
         this.boardFactory.deserialization(
-          this.game.value!.currentBoard,
-          computeActivePlayer(this.game.value!).playerOrder,
+          this.game.value.currentBoard,
+          computeActivePlayer(this.game.value).playerOrder,
         ),
       )
       return
@@ -166,21 +169,23 @@ export class GameManager {
   }
 
   private async pollForNewGame(): Promise<void> {
-    setTimeout(this.pollForNewGame.bind(this), POLLING_TIME)
+    setTimeout(() => void this.pollForNewGame(), POLLING_TIME)
     if (!this.game.value) {
       return Promise.resolve()
     }
-    if (this.currentBoard.value!.activePlayer !== this.myOrder) {
+    if (!this.currentBoard.value) {
+      throw new Error('GameManager does not contain a valid Board object')
+    }
+    if (this.currentBoard.value.activePlayer !== this.myOrder) {
       await this.getGame(this.game.value.id)
     }
   }
 
   private async getGame(id: string): Promise<void> {
-    const response = await axios.get<Game>(GAME_API_URL + '/' + id, {
-      headers: {
-        turn: this.game.value ? this.game.value.turn : -1,
-      },
-    })
+    const response = await axios.get<Game | undefined>(
+      GAME_API_URL + '/' + id,
+      { headers: { turn: this.game.value ? this.game.value.turn : -1 } },
+    )
 
     if (response.status !== 200) {
       return Promise.resolve()

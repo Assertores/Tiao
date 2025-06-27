@@ -54,7 +54,9 @@ export function useGame(): Game | undefined {
     const token = gameManager.game.subscribe(() => {
       setGame(gameManager.game.value)
     })
-    return () => token.destroy()
+    return () => {
+      token.destroy()
+    }
   }, [gameManager.game])
 
   return game
@@ -81,7 +83,9 @@ export function useCurrentGameBoard(): Board | undefined {
     const token = gameManager.currentBoard.subscribe(() => {
       setBoard(gameManager.currentBoard.value)
     })
-    return () => token.destroy()
+    return () => {
+      token.destroy()
+    }
   }, [gameManager.currentBoard])
 
   return board
