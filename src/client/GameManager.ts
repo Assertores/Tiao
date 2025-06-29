@@ -183,8 +183,12 @@ export class GameManager {
 
   private async getGame(id: string): Promise<void> {
     const response = await axios.get<Game | undefined>(
-      GAME_API_URL + '/' + id,
-      { headers: { turn: this.game.value ? this.game.value.turn : -1 } },
+      `${GAME_API_URL}/${id}`,
+      {
+        params: {
+          turn: this.game.value?.turn,
+        },
+      },
     )
 
     if (response.status !== 200) {

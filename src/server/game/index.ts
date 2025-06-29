@@ -45,20 +45,15 @@ export function createGameApi(storage: DataStorage): Application {
         res.sendStatus(404)
         return
       }
-      if (typeof req.headers.turn !== 'undefined') {
-        let turns: number[] = []
-        if (typeof req.headers.turn === 'string') {
-          turns.push(parseInt(req.headers.turn))
-        } else {
-          turns = req.headers.turn.map((element) => {
-            return parseInt(element)
-          })
-        }
 
-        if (turns.includes(game.turn)) {
-          res.sendStatus(200)
-          return
-        }
+      // We don't send the game again if it's still the same turn
+      const requestedTurn =
+        req.query.turn && typeof req.query.turn === 'string'
+          ? parseInt(req.query.turn)
+          : undefined
+      if (game.turn === requestedTurn) {
+        res.status(204).send()
+        return
       }
 
       res.status(200).json(game)
